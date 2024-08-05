@@ -171,6 +171,58 @@ class Dokter_model extends CI_Model {
         return $this->db->delete('diagnosa_pasien');
     }
 
+    public function get_existing_resep($no_rawat, $kd_dokter)
+    {
+        $this->db->where('no_rawat', $no_rawat);
+        $this->db->where('kd_dokter', $kd_dokter);
+        $this->db->where('status', 'ralan'); // Sesuaikan dengan kondisi yang diinginkan
+        $query = $this->db->get('resep_obat'); // Sesuaikan dengan nama tabel yang benar
+
+        return $query->row();
+    }
+
+    public function check_existing_obat($no_resep, $kode_brng)
+    {
+        $this->db->where('no_resep', $no_resep);
+        $this->db->where('kode_brng', $kode_brng);
+        $query = $this->db->get('resep_dokter'); // Sesuaikan dengan nama tabel yang benar
+
+        return $query->num_rows() > 0;
+    }
+
+
+    public function create_resep_dokter($data)
+    {
+        // Hilangkan karakter garis miring (/) dari no_rawat untuk membuat no_resep
+        $no_resep = str_replace('/', '', $data['no_rawat']);
+        
+        $insert_data = [
+            'no_resep' => $no_resep, // Menggunakan no_rawat yang sudah diubah
+            'tgl_peresepan' => date('Y-m-d'),
+            'jam_peresepan' => date('H:i:s'),
+            'tgl_perawatan' => '0000-00-00',
+            'no_rawat' => $data['no_rawat'],
+            'kd_dokter' => $data['kd_dokter'],
+            'status' => 'ralan' // Sesuaikan dengan status yang diinginkan
+        ];
+
+        $this->db->insert('resep_obat', $insert_data); // Sesuaikan dengan nama tabel yang benar
+
+        return $insert_data['no_resep'];
+    }
+
+    public function save_resep_obat($no_resep, $data)
+    {
+        $insert_data = [
+            'no_resep' => $no_resep,
+            'kode_brng' => $data['kode_brng'],
+            'jml' => $data['jml'],
+            'aturan_pakai' => $data['aturan_pakai']
+        ];
+
+        return $this->db->insert('resep_dokter', $insert_data); // Sesuaikan dengan nama tabel yang benar
+    }
+
 
 
 }

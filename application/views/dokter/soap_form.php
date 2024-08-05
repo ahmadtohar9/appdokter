@@ -371,9 +371,9 @@
     </div>
 </div>
 
-<!-- Modal Diagnosa -->
+<!-- Form Input Resep -->
 <div class="modal fade" id="resepModal" tabindex="-1" role="dialog" aria-labelledby="resepModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document"> <!-- Ubah menjadi modal-lg untuk ukuran besar -->
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="resepModalLabel">Resep Dokter</h5>
@@ -383,26 +383,106 @@
             </div>
             <div class="modal-body">
                 <form id="resepForm">
+                    <input type="hidden" name="no_rawat" value="<?php echo $detail_pasien->no_rawat; ?>">
+                    <input type="hidden" name="kd_dokter" value="<?php echo $detail_pasien->kd_dokter; ?>">
                     <div class="form-group">
                         <label for="kode_brng">Obat/Alkes/BHP</label>
                         <input type="text" class="form-control form-control-sm" id="kode_brng" name="kode_brng">
                     </div>
                     <div class="form-group">
+                        <label for="Obat">Obat</label>
+                        <input type="text" class="form-control form-control-sm" id="nama_brng" name="nama_brng" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="stok">Stok</label>
+                        <input type="text" class="form-control form-control-sm" id="stok" name="stok" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="Harga">Harga Jual</label>
+                        <input type="text" class="form-control form-control-sm" id="harga_obat" name="harga_obat" readonly>
+                    </div>
+                    <div class="form-group">
                         <label for="jml">Jumlah</label>
                         <input type="text" class="form-control form-control-sm" id="jml" name="jml">
                     </div>
-
                     <div class="form-group">
-                        <label for="aturan_pakai">Obat/Alkes/BHP</label>
+                        <label for="aturan_pakai">Aturan Pakai</label>
                         <input type="text" class="form-control form-control-sm" id="aturan_pakai" name="aturan_pakai">
                     </div>
-                
                     <button type="button" class="btn btn-primary" onclick="submitResep()">Kirim</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function(){
+    // Initialize autocomplete
+    $("#kode_brng").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "<?php echo site_url('DokterController/get_DataBarang'); ?>",
+                method: "GET",
+                data: {
+                    term: request.term
+                },
+                dataType: "json",
+                success: function(data) {
+                    response($.map(data, function(item) {
+                        return {
+                            label: item.nama_brng + ' - Stok: ' + item.stok + ' - Harga: ' + item.harga_obat,
+                            value: item.kode_brng,
+                            nama_brng: item.nama_brng,
+                            stok: item.stok,
+                            harga: item.harga_obat
+                        };
+                    }));
+                }
+            });
+        },
+        minLength: 2,
+        select: function(event, ui) {
+            $('#kode_brng').val(ui.item.value);
+            $('#nama_brng').val(ui.item.nama_brng);
+        }
+    });
+});
+
+function submitResep() {
+    var kode_brng = $('#kode_brng').val();
+    var jml = $('#jml').val();
+    var aturan_pakai = $('#aturan_pakai').val();
+    var no_rawat = $('[name="no_rawat"]').val();
+    var kd_dokter = $('[name="kd_dokter"]').val();
+
+    $.ajax({
+        url: "<?php echo site_url('DokterController/save_resep'); ?>",
+        method: "POST",
+        data: {
+            no_rawat: no_rawat,
+            kd_dokter: kd_dokter,
+            kode_brng: kode_brng,
+            jml: jml,
+            aturan_pakai: aturan_pakai
+        },
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                alert('Resep berhasil ditambahkan');
+                $('#resepModal').modal('hide');
+                $('#resepForm')[0].reset();
+            } else {
+                alert('Gagal menambahkan resep: ' + res.message);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('Terjadi kesalahan: ' + textStatus);
+        }
+    });
+}
+</script>
+
 
 <script>
     // Submit SOAP Form

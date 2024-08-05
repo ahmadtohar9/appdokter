@@ -56,33 +56,63 @@
             });
         });
 
-        $(document).ready(function(){
-            // Initialize autocomplete
-            $("#kode_brng").autocomplete({
-                source: function(request, response) {
-                    $.ajax({
-                        url: "<?php echo site_url('DokterController/get_DataBarang'); ?>",
-                        method: "GET",
-                        data: {
-                            term: request.term
-                        },
-                        dataType: "json",
-                        success: function(data) {
-                            response($.map(data, function(item) {
-                                return {
-                                    label: item.nama_brng,
-                                    value: item.kode_brng
-                                };
-                            }));
-                        }
-                    });
+       $(document).ready(function(){
+    // Initialize autocomplete
+    $("#kode_brng").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "<?php echo site_url('DokterController/get_DataBarang'); ?>",
+                method: "GET",
+                data: {
+                    term: request.term
                 },
-                minLength: 2,
-                select: function(event, ui) {
-                    $('#kode_brng').val(ui.item.value);
+                dataType: "json",
+                success: function(data) {
+                    response($.map(data, function(item) {
+                        return {
+                            label: item.nama_brng + ' - Stok: ' + item.stok + ' - Harga: ' + item.harga_obat,
+                            value: item.kode_brng,
+                            nama_brng: item.nama_brng,
+                            stok: item.stok,
+                            harga: item.harga_obat
+                        };
+                    }));
                 }
             });
-        });
+        },
+        minLength: 2,
+        select: function(event, ui) {
+            $('#kode_brng').val(ui.item.value);
+            $('#nama_brng').val(ui.item.nama_brng);
+            $('#stok').val(ui.item.stok);
+            $('#harga_obat').val(ui.item.harga);
+        }
+    });
+});
+
+function submitResep() {
+    var formData = $('#resepForm').serialize(); // Mengambil data dari form
+
+    $.ajax({
+        url: "<?php echo site_url('DokterController/save_resep'); ?>",
+        method: "POST",
+        data: formData,
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                alert('Resep berhasil ditambahkan');
+                $('#resepModal').modal('hide');
+                $('#resepForm')[0].reset();
+                // Tambahkan logika jika ingin memperbarui tampilan setelah resep berhasil ditambahkan
+            } else {
+                alert('Gagal menambahkan resep: ' + res.message);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('Terjadi kesalahan: ' + textStatus);
+        }
+    });
+}
 
     </script>
 </body>

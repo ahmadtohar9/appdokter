@@ -200,15 +200,58 @@ class DokterController extends CI_Controller {
     public function get_DataBarang()
     {
         $term = $this->input->get('term');
-        $query = $this->db->like('kode_brng', $term)
-                          ->or_like('nama_brng', $term)
+        $query = $this->db->select('databarang.kode_brng, databarang.nama_brng, gudangbarang.stok, databarang.ralan AS harga_obat')
+                          ->from('gudangbarang')
+                          ->join('databarang', 'gudangbarang.kode_brng = databarang.kode_brng')
+                          ->where('gudangbarang.kd_bangsal', 'AP')
+                          ->like('databarang.nama_brng', $term)
+                          ->where('gudangbarang.stok >', 0)
                           ->limit(10)
-                          ->get('databarang');
+                          ->get();
         $result = $query->result_array();
 
         // Pastikan mengembalikan data dalam bentuk JSON
         echo json_encode($result);
     }
+
+
+    public function save_resep()
+    {
+        $data = $this->input->post();
+
+        if (!isset($data['no_rawat']) || !isset($data['kd_dokter'])) {
+            $response = ['status' => 'error', 'message' => 'Data no_rawat atau kd_dokter tidak ditemukan'];
+            echo json_encode($response);
+            return;
+        }
+
+        // Logika untuk memeriksa apakah resep dokter sudah ada atau belum
+        $existing_resep = $this->Dokter_model->get_existing_resep($data['no_rawat'], $data['kd_dokter']);
+        if ($existing_resep) {
+            $no_resep = $existing_resep->no_resep;
+        } else {
+            $no_resep = $this->Dokter_model->create_resep_dokter($data);
+        }
+
+        // Cek apakah obat dengan kode barang yang sama sudah ada
+        $is_obat_exist = $this->Dokter_model->check_existing_obat($no_resep, $data['kode_brng']);
+        if ($is_obat_exist) {
+            $response = ['status' => 'error', 'message' => 'Obat dengan kode barang yang sama sudah ada di resep ini'];
+            echo json_encode($response);
+            return;
+        }
+
+        $result = $this->Dokter_model->save_resep_obat($no_resep, $data);
+
+        if ($result) {
+            $response = ['status' => 'success', 'message' => 'Resep berhasil ditambahkan'];
+        } else {
+            $response = ['status' => 'error', 'message' => 'Gagal menambahkan resep'];
+        }
+
+        echo json_encode($response);
+    }
+
 
 }
 ?>
