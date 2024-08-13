@@ -262,10 +262,10 @@ class DokterController extends CI_Controller {
 
     public function delete_resep()
     {
-        $no_rawat = $this->input->post('no_rawat');
+        $no_resep = $this->input->post('no_resep');
         $kode_brng = $this->input->post('kode_brng');
 
-        $result = $this->Resep_model->delete_resep($no_rawat, $kode_brng);
+        $result = $this->Resep_model->delete_resep($no_resep, $kode_brng);
 
         if ($result) {
             $response = ['status' => 'success', 'message' => 'Resep berhasil dihapus'];
@@ -275,6 +275,56 @@ class DokterController extends CI_Controller {
 
         echo json_encode($response);
     }
+
+    public function save_resep_batch() 
+{
+    $data = $this->input->post();
+
+    if (!isset($data['no_rawat']) || !isset($data['kd_dokter'])) {
+        $response = ['status' => 'error', 'message' => 'Data no_rawat atau kd_dokter tidak ditemukan'];
+        echo json_encode($response);
+        return;
+    }
+
+    // Logika untuk memeriksa apakah resep dokter sudah ada atau belum
+    $existing_resep = $this->Dokter_model->get_existing_resep($data['no_rawat'], $data['kd_dokter']);
+    if ($existing_resep) {
+        $no_resep = $existing_resep->no_resep;
+    } else {
+        $no_resep = $this->Dokter_model->create_resep_dokter($data);
+    }
+
+    $duplicate_obat = false;
+
+    // Implementasikan logika penyimpanan batch untuk data resep
+    foreach ($data['kode_brng'] as $index => $kode) {
+        // Cek apakah obat dengan kode barang yang sama sudah ada di resep
+        $is_obat_exist = $this->Dokter_model->check_existing_obat($no_resep, $kode);
+        if ($is_obat_exist) {
+            $duplicate_obat = true;
+            continue; // Abaikan obat yang sudah ada dan lanjutkan ke iterasi berikutnya
+        }
+
+        $obat_data = [
+            'no_resep' => $no_resep,
+            'kode_brng' => $kode,
+            'jml' => $data['jml'][$index],
+            'aturan_pakai' => $data['aturan_pakai'][$index],
+            // tambahkan field lainnya jika diperlukan
+        ];
+        $this->db->insert('resep_dokter', $obat_data);
+    }
+
+    if ($duplicate_obat) {
+        $response = ['status' => 'warning', 'message' => 'Beberapa obat tidak ditambahkan karena sudah ada dalam resep.'];
+    } else {
+        $response = ['status' => 'success', 'message' => 'Resep berhasil ditambahkan'];
+    }
+
+    // Kembalikan response
+    echo json_encode($response);
+}
+
 
 
 }

@@ -295,8 +295,11 @@
 
 
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
+             <div class="card-header py-3 d-flex align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Diagnosa</h6>
+                <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#diagnosaModal">
+                    Tambah Diagnosa
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -318,21 +321,63 @@
             </div>
         </div>
 
+        <div id="resepFormContainer" style="display:none;">
+            <form id="dynamicResepForm">
+                <div id="resepInputs">
+                    <div class="form-row resep-item">
+                        <div class="form-group col-md-2">
+                            <label for="kode_brng">Obat/Alkes/BHP</label>
+                            <input type="text" class="form-control form-control-sm kode_brng" name="kode_brng[]">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="nama_brng">Nama Obat</label>
+                            <input type="text" class="form-control form-control-sm nama_brng" name="nama_brng[]" readonly>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="stok">Stok</label>
+                            <input type="text" class="form-control form-control-sm stok" name="stok[]" readonly>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="harga">Harga</label>
+                            <input type="text" class="form-control form-control-sm harga" name="harga[]" readonly>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="jml">Jumlah</label>
+                            <input type="text" class="form-control form-control-sm jml" name="jml[]">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="aturan_pakai">Aturan Pakai</label>
+                            <input type="text" class="form-control form-control-sm aturan_pakai" name="aturan_pakai[]">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="addResepInput">Tambah Obat</button>
+                <button type="button" class="btn btn-primary btn-sm" id="saveResep">Save</button>
+                <button type="button" class="btn btn-danger btn-sm" id="closeResepForm">Close</button>
+            </form>
+        </div>
+
+
+
+
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Resep Obat</h6>
-            </div>
+                <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Resep Obat</h6>
+                    <button type="button" class="btn btn-primary btn-md" id="toggleResepForm">
+                        Tambah Resep
+                    </button>
+                </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="resepTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Pasien</th>
                                 <th>Obat</th>
                                 <th>Jumlah</th>
                                 <th>Signa</th>
-                                <th>Harga</th>
+                                <th>Satuan</th>
+                                <th>Total Biaya</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -421,50 +466,7 @@
     </div>
 </div>
 
-<!-- Form Input Resep -->
-<div class="modal fade" id="resepModal" tabindex="-1" role="dialog" aria-labelledby="resepModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document"> <!-- Ubah menjadi modal-lg untuk ukuran besar -->
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="resepModalLabel">Resep Dokter</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="resepForm">
-                    <input type="hidden" name="no_rawat" value="<?php echo $detail_pasien->no_rawat; ?>">
-                    <input type="hidden" name="kd_dokter" value="<?php echo $detail_pasien->kd_dokter; ?>">
-                    <div class="form-group">
-                        <label for="kode_brng">Obat/Alkes/BHP</label>
-                        <input type="text" class="form-control form-control-sm" id="kode_brng" name="kode_brng">
-                    </div>
-                    <div class="form-group">
-                        <label for="Obat">Obat</label>
-                        <input type="text" class="form-control form-control-sm" id="nama_brng" name="nama_brng" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="stok">Stok</label>
-                        <input type="text" class="form-control form-control-sm" id="stok" name="stok" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="Harga">Harga Jual</label>
-                        <input type="text" class="form-control form-control-sm" id="harga_obat" name="harga_obat" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="jml">Jumlah</label>
-                        <input type="text" class="form-control form-control-sm" id="jml" name="jml">
-                    </div>
-                    <div class="form-group">
-                        <label for="aturan_pakai">Aturan Pakai</label>
-                        <input type="text" class="form-control form-control-sm" id="aturan_pakai" name="aturan_pakai">
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="submitResep()">Kirim</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <script>
 $(document).ready(function(){
@@ -476,9 +478,189 @@ $(document).ready(function(){
 
 
 <script>
-$(document).ready(function(){
-    // Initialize autocomplete
-    $("#kode_brng").autocomplete({
+$(document).ready(function() {
+    // Inisialisasi autocomplete untuk input pertama
+    applyAutocomplete($('.search_nama_brng').first());
+
+    // Toggle tampilan form input resep
+    $('#toggleResepForm').click(function() {
+        $('#resepFormContainer').toggle();
+
+        // Tambahkan satu baris input secara otomatis jika form baru saja ditampilkan
+        if ($('#resepFormContainer').is(':visible')) {
+            $('#dynamicResepForm')[0].reset(); // Reset form input resep
+            $('#resepInputs').html(''); // Bersihkan semua baris input
+            addResepInputRow(); // Tambahkan satu baris input baru
+        }
+    });
+
+    // Tambah baris input resep
+    $('#addResepInput').click(function() {
+        addResepInputRow();
+    });
+
+    // Tutup form input resep
+    $('#closeResepForm').click(function() {
+        $('#resepFormContainer').hide();
+        $('#dynamicResepForm')[0].reset();
+        $('#resepInputs').html(''); // Bersihkan semua baris input
+    });
+
+    // Simpan data resep dan tampilkan di tabel
+    $('#saveResep').click(function() {
+        var kode_brng = $('.kode_brng').map(function(){ return $(this).val(); }).get();
+        var jml = $('.jml').map(function(){ return $(this).val(); }).get();
+        var aturan_pakai = $('.aturan_pakai').map(function(){ return $(this).val(); }).get();
+        var no_rawat = $('[name="no_rawat"]').val();
+        var kd_dokter = $('[name="kd_dokter"]').val();
+
+        // Validasi untuk cek apakah ada obat yang sama
+        if (hasDuplicate(kode_brng)) {
+            alert('Tidak boleh memasukkan obat yang sama lebih dari sekali.'); // Tampilkan notifikasi
+            return false;
+        }
+
+        $.ajax({
+            url: "<?php echo site_url('DokterController/save_resep_batch'); ?>",
+            method: "POST",
+            data: {
+                no_rawat: no_rawat,
+                kd_dokter: kd_dokter,
+                kode_brng: kode_brng,
+                jml: jml,
+                aturan_pakai: aturan_pakai
+            },
+            success: function(response) {
+                var res = JSON.parse(response);
+                if (res.status === 'success') {
+                    $('#resepFormContainer').hide();
+                    loadResepData(); // Muat ulang data tabel resep
+                    $('#dynamicResepForm')[0].reset();
+                    $('#resepInputs').html(''); // Bersihkan semua baris input kecuali yang pertama
+                } else {
+                    alert('Gagal menambahkan resep: ' + res.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Terjadi kesalahan: ' + textStatus);
+            }
+        });
+    });
+
+    // Muat data resep ke tabel saat halaman pertama kali dibuka
+    loadResepData();
+});
+
+// Fungsi untuk memuat data resep ke tabel
+function loadResepData() {
+    var noRawat = $('[name="no_rawat"]').val();
+    $.ajax({
+        url: "<?php echo site_url('DokterController/get_resep_data'); ?>",
+        method: "GET",
+        data: { no_rawat: noRawat },
+        success: function(data) {
+            try {
+                var resepList = JSON.parse(data);
+                var tableBody = '';
+                var totalKeseluruhan = 0;
+
+                resepList.forEach(function(resep, index) {
+                    var totalRalan = resep.jml * resep.ralan;
+                    totalKeseluruhan += totalRalan;
+
+                    tableBody += '<tr>';
+                    tableBody += '<td>' + (index + 1) + '</td>';
+                    tableBody += '<td>' + resep.nama_brng + '</td>';
+                    tableBody += '<td>' + resep.jml + '</td>';
+                    tableBody += '<td>' + resep.aturan_pakai + '</td>';
+                    tableBody += '<td>Rp. ' + formatRupiah(resep.ralan) + '</td>';
+                    tableBody += '<td>Rp. ' + formatRupiah(totalRalan) + '</td>';
+                    tableBody += '<td><button type="button" class="btn btn-danger btn-sm" onclick="deleteResep(\'' + resep.no_resep + '\', \'' + resep.kode_brng + '\')">Hapus</button></td>';
+                    tableBody += '</tr>';
+                });
+
+                var tableFooter = '<tr><td colspan="5"><strong>Total Keseluruhan:</strong></td>';
+                tableFooter += '<td colspan="2"><strong>Rp. ' + formatRupiah(totalKeseluruhan) + '</strong></td></tr>';
+
+                $('#resepTable tbody').html(tableBody);
+                $('#resepTable tfoot').html(tableFooter);
+
+            } catch (error) {
+                console.error('Error parsing resep data:', error);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error fetching resep data:', textStatus, errorThrown);
+        }
+    });
+}
+
+// Fungsi untuk menghapus resep
+function deleteResep(no_resep, kode_brng) {
+    if (confirm('Apakah Anda yakin ingin menghapus resep ini?')) {
+        $.ajax({
+            url: "<?php echo site_url('DokterController/delete_resep'); ?>",
+            method: "POST",
+            data: {
+                no_resep: no_resep,
+                kode_brng: kode_brng
+            },
+            success: function(response) {
+                var res = JSON.parse(response);
+                if (res.status === 'success') {
+                    loadResepData();  // Memperbarui data resep setelah penghapusan
+                    // Jangan tampilkan form secara otomatis setelah menghapus resep
+                } else {
+                    alert('Gagal menghapus resep: ' + res.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error deleting resep:', textStatus, errorThrown);
+                alert('Terjadi kesalahan: ' + textStatus);
+            }
+        });
+    }
+}
+
+// Fungsi untuk menambahkan baris input resep
+function addResepInputRow() {
+    var newResepInput = `
+        <div class="form-row resep-item">
+            <div class="form-group col-md-2">
+                <label for="nama_brng">Nama Obat</label>
+                <input type="text" class="form-control form-control-sm search_nama_brng" placeholder="Cari obat...">
+                <input type="hidden" class="form-control form-control-sm kode_brng" name="kode_brng[]">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="jml">Jumlah</label>
+                <input type="text" class="form-control form-control-sm jml" name="jml[]">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="aturan_pakai">Aturan Pakai</label>
+                <input type="text" class="form-control form-control-sm aturan_pakai" name="aturan_pakai[]">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="stok">Stok</label>
+                <input type="text" class="form-control form-control-sm stok" name="stok[]" readonly>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="harga">Harga</label>
+                <input type="text" class="form-control form-control-sm harga" name="harga[]" readonly>
+            </div>
+        </div>`;
+    $('#resepInputs').append(newResepInput);
+    
+    // Terapkan autocomplete pada input baru
+    applyAutocomplete($('.search_nama_brng').last());
+}
+
+// Fungsi untuk mengecek duplikasi dalam array
+function hasDuplicate(arr) {
+    return new Set(arr).size !== arr.length;
+}
+
+function applyAutocomplete(element) {
+    element.autocomplete({
         source: function(request, response) {
             $.ajax({
                 url: "<?php echo site_url('DokterController/get_DataBarang'); ?>",
@@ -491,8 +673,8 @@ $(document).ready(function(){
                     response($.map(data, function(item) {
                         return {
                             label: item.nama_brng + ' - Stok: ' + item.stok + ' - Harga: ' + item.harga_obat,
-                            value: item.kode_brng,
-                            nama_brng: item.nama_brng,
+                            value: item.nama_brng,
+                            kode_brng: item.kode_brng,
                             stok: item.stok,
                             harga: item.harga_obat
                         };
@@ -502,119 +684,29 @@ $(document).ready(function(){
         },
         minLength: 2,
         select: function(event, ui) {
-            $('#kode_brng').val(ui.item.value);
-            $('#nama_brng').val(ui.item.nama_brng);
-        }
-    });
-});
+            var parentRow = $(this).closest('.form-row');
+            parentRow.find('.search_nama_brng').val(ui.item.value); // set nama obat ke field readonly
+            parentRow.find('.kode_brng').val(ui.item.kode_brng); // set kode barang ke field hidden
+            parentRow.find('.stok').val(ui.item.stok);
+            parentRow.find('.harga').val(ui.item.harga);
 
-function submitResep() {
-    var kode_brng = $('#kode_brng').val();
-    var jml = $('#jml').val();
-    var aturan_pakai = $('#aturan_pakai').val();
-    var no_rawat = $('[name="no_rawat"]').val();
-    var kd_dokter = $('[name="kd_dokter"]').val();
-
-    $.ajax({
-        url: "<?php echo site_url('DokterController/save_resep'); ?>",
-        method: "POST",
-        data: {
-            no_rawat: no_rawat,
-            kd_dokter: kd_dokter,
-            kode_brng: kode_brng,
-            jml: jml,
-            aturan_pakai: aturan_pakai
-        },
-        success: function(response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                alert('Resep berhasil ditambahkan');
-                $('#resepModal').modal('hide');
-                $('#resepForm')[0].reset();
-            } else {
-                alert('Gagal menambahkan resep: ' + res.message);
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            alert('Terjadi kesalahan: ' + textStatus);
+            // Bersihkan field pencarian setelah memilih
+            $(this).val(ui.item.value);
         }
     });
 }
 
-    function formatRupiah(number) {
-        return parseInt(number).toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR'
-        }).replace('Rp', ''); // Menghilangkan 'Rp' bawaan agar bisa menambah manual
-    }
-
-    function loadResepData() {
-        var noRawat = $('[name="no_rawat"]').val();
-        $.ajax({
-            url: "<?php echo site_url('DokterController/get_resep_data'); ?>",
-            method: "GET",
-            data: { no_rawat: noRawat },
-            success: function(data) {
-                console.log("Diagnosa data fetched successfully:", data);  // Debugging log
-                try {
-                    var resepList = JSON.parse(data);
-                    var tableBody = '';
-                    resepList.forEach(function(resep, index) {
-                        tableBody += '<tr>';
-                        tableBody += '<td>' + (index + 1) + '</td>';
-                        tableBody += '<td>' + resep.nm_pasien  + '</td>';
-                        tableBody += '<td>' + resep.nama_brng + '</td>';
-                        tableBody += '<td>' + resep.jml + '</td>';
-                        tableBody += '<td>' + resep.aturan_pakai + '</td>';
-                        tableBody += '<td>Rp. ' + formatRupiah(resep.ralan) + '</td>';
-                        tableBody += '<td><button type="button" class="btn btn-danger btn-sm" onclick="deleteResep(\'' + resep.no_resep + '\', \'' + resep.kode_brng + '\')">Hapus</button></td>';
-                        tableBody += '</tr>';
-                    });
-                    $('#resepTable tbody').html(tableBody);
-                } catch (error) {
-                    console.error('Error parsing resep data:', error);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error fetching resep data:', textStatus, errorThrown);  // Debugging log
-            }
-        });
-    }
-
-
-    function deleteResep(no_rawat, kode_brng) {
-        if (confirm('Apakah Anda yakin ingin menghapus resep ini?')) {
-            $.ajax({
-                url: "<?php echo site_url('DokterController/delete_resep'); ?>",
-                method: "POST",
-                data: {
-                    no_rawat: no_rawat,
-                    kode_brng: kode_brng
-                },
-                success: function(response) {
-                    var res = JSON.parse(response);
-                    if (res.status === 'success') {
-                        alert('Resep berhasil dihapus');
-                        loadResepData();  // Memperbarui data diagnosa setelah penghapusan
-                    } else {
-                        alert('Gagal menghapus resep: ' + res.message);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error deleting resep:', textStatus, errorThrown);  // Debugging log
-                    alert('Terjadi kesalahan: ' + textStatus);
-                }
-            });
-        }
-    }
-
-    $(document).ready(function() {
-        loadResepData();
-        $('#resepModal').on('hidden.bs.modal', function () {
-            loadResepData();
-        });
-    });
+// Fungsi untuk format Rupiah
+function formatRupiah(number) {
+    return parseInt(number).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+    }).replace('Rp', '');
+}
 </script>
+
+
+
 
 
 <script>
