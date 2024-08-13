@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-2">
+    <div class="col-3">
         <div class="card">
             <div class="card-header">
                 Informasi Pasien
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="col-10">
+    <div class="col-9">
         <div class="card">
             <div class="card-header">
                 Form SOAP
@@ -423,6 +423,15 @@
 
 <script>
 $(document).ready(function(){
+    // Set tanggal default ke tanggal hari ini
+    var today = new Date().toISOString().split('T')[0];
+    $('#tanggal').val(today);
+});
+</script>
+
+
+<script>
+$(document).ready(function(){
     // Initialize autocomplete
     $("#kode_brng").autocomplete({
         source: function(request, response) {
@@ -780,10 +789,16 @@ function submitResep() {
     }
 
     function clearSOAPForm() {
-        $('#soapForm').find('input:text, input:hidden, input[type=date], input[type=time], textarea').val('');
-        $('#soapForm').find('select').prop('selectedIndex', 0);
-        $('#soapForm').find('#jam').val('<?php echo date('H:i:s'); ?>'); // Set default value for time
-    }
+    $('#soapForm').find('input:text, input[type=date], input[type=time], textarea').val('');
+    $('#soapForm').find('select').prop('selectedIndex', 0);
+    // Tambahkan kembali nilai `no_rawat` dan `mode`
+    $('#soapForm').find('input[name="no_rawat"]').val('<?php echo isset($detail_pasien->no_rawat) ? $detail_pasien->no_rawat : ""; ?>');
+    $('#soapForm').find('input[name="mode"]').val('new'); // Atur mode menjadi 'new' jika SOAP dihapus
+    $('#soapForm').find('#jam').val('<?php echo date('H:i:s'); ?>'); // Set default value for time
+    $('#soapForm').find('#tanggal').val('<?php echo date('Y-m-d'); ?>'); // Set default value for date
+
+}
+
 
 
     $(document).ready(function() {
