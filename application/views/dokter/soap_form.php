@@ -170,8 +170,11 @@
                         <button type="button" class="btn btn-danger btn-md" data-toggle="modal" data-target="#diagnosaModal">
                             Diagnosa
                         </button>
-                        <button type="button" class="btn btn-danger btn-md" data-toggle="modal" data-target="#resepModal">
+                        <button type="button" class="btn btn-success btn-md" data-toggle="modal" data-target="#resepModal">
                             Resep Obat
+                        </button>
+                        <button type="button" class="btn btn-danger btn-md" data-toggle="modal" data-target="#resumeModal">
+                            Resume
                         </button>
                     </form>
             </div>
@@ -354,13 +357,13 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="diagnosaForm">
+                 <form id="diagnosaForm" class="user">
                     <div class="form-group">
                         <label for="kd_penyakit">Penyakit</label>
                         <input type="text" class="form-control form-control-sm" id="kd_penyakit" name="kd_penyakit">
                     </div>
                     <div class="form-group">
-                        <label for="prioritas">Prioritas</label>
+                         <label for="prioritas">Prioritas</label>
                         <select class="form-control form-control-sm" id="prioritas" name="prioritas">
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -370,6 +373,48 @@
                         </select>
                     </div>
                     <button type="button" class="btn btn-primary" onclick="submitDiagnosa()">Tambah</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Resep -->
+<div class="modal fade" id="resumeModal" tabindex="-1" role="dialog" aria-labelledby="resumeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resumeModalLabel">Resume Pasien</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="user">
+                    <div class="form-group row">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <input type="text" class="form-control form-control-user" id="exampleFirstName"
+                                placeholder="First Name">
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control form-control-user" id="exampleLastName"
+                                placeholder="Last Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control form-control-user" id="exampleInputEmail"
+                            placeholder="Email Address">
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <input type="password" class="form-control form-control-user"
+                                id="exampleInputPassword" placeholder="Password">
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control form-control-user"
+                                id="exampleRepeatPassword" placeholder="Repeat Password">
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
