@@ -289,12 +289,8 @@
                 </style>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Diagnosa Section -->
-<div class="row">
-    <div class="col-12">
+
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Diagnosa</h6>
@@ -313,30 +309,39 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (empty($diagnosa_list)): ?>
-                                <tr><td colspan="6">Data belum ada.</td></tr>
-                            <?php else: ?>
-                                <?php $no = 1; foreach ($diagnosa_list as $diagnosa): ?>
-                                    <tr>
-                                        <td><?php echo $no++; ?></td>
-                                        <td><?php echo $diagnosa->kd_penyakit; ?></td>
-                                        <td><?php echo $diagnosa->nm_penyakit; ?></td>
-                                        <td><?php echo $diagnosa->status_penyakit; ?></td>
-                                        <td><?php echo $diagnosa->prioritas; ?></td>
-                                        <td>
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteDiagnosa('<?php echo $diagnosa->id; ?>')">Hapus</button>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Resep Obat</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="resepTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Pasien</th>
+                                <th>Obat</th>
+                                <th>Jumlah</th>
+                                <th>Signa</th>
+                                <th>Harga</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
-
 
 <!-- Modal Diagnosa -->
 <div class="modal fade" id="diagnosaModal" tabindex="-1" role="dialog" aria-labelledby="diagnosaModalLabel" aria-hidden="true">
@@ -481,6 +486,80 @@ function submitResep() {
         }
     });
 }
+
+    function formatRupiah(number) {
+        return parseInt(number).toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR'
+        }).replace('Rp', ''); // Menghilangkan 'Rp' bawaan agar bisa menambah manual
+    }
+
+    function loadResepData() {
+        var noRawat = $('[name="no_rawat"]').val();
+        $.ajax({
+            url: "<?php echo site_url('DokterController/get_resep_data'); ?>",
+            method: "GET",
+            data: { no_rawat: noRawat },
+            success: function(data) {
+                console.log("Diagnosa data fetched successfully:", data);  // Debugging log
+                try {
+                    var resepList = JSON.parse(data);
+                    var tableBody = '';
+                    resepList.forEach(function(resep, index) {
+                        tableBody += '<tr>';
+                        tableBody += '<td>' + (index + 1) + '</td>';
+                        tableBody += '<td>' + resep.nm_pasien  + '</td>';
+                        tableBody += '<td>' + resep.nama_brng + '</td>';
+                        tableBody += '<td>' + resep.jml + '</td>';
+                        tableBody += '<td>' + resep.aturan_pakai + '</td>';
+                        tableBody += '<td>Rp. ' + formatRupiah(resep.ralan) + '</td>';
+                        tableBody += '<td><button type="button" class="btn btn-danger btn-sm" onclick="deleteResep(\'' + resep.no_resep + '\', \'' + resep.kode_brng + '\')">Hapus</button></td>';
+                        tableBody += '</tr>';
+                    });
+                    $('#resepTable tbody').html(tableBody);
+                } catch (error) {
+                    console.error('Error parsing resep data:', error);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching resep data:', textStatus, errorThrown);  // Debugging log
+            }
+        });
+    }
+
+
+    function deleteResep(no_rawat, kode_brng) {
+        if (confirm('Apakah Anda yakin ingin menghapus resep ini?')) {
+            $.ajax({
+                url: "<?php echo site_url('DokterController/delete_resep'); ?>",
+                method: "POST",
+                data: {
+                    no_rawat: no_rawat,
+                    kode_brng: kode_brng
+                },
+                success: function(response) {
+                    var res = JSON.parse(response);
+                    if (res.status === 'success') {
+                        alert('Resep berhasil dihapus');
+                        loadResepData();  // Memperbarui data diagnosa setelah penghapusan
+                    } else {
+                        alert('Gagal menghapus resep: ' + res.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error deleting resep:', textStatus, errorThrown);  // Debugging log
+                    alert('Terjadi kesalahan: ' + textStatus);
+                }
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        loadResepData();
+        $('#resepModal').on('hidden.bs.modal', function () {
+            loadResepData();
+        });
+    });
 </script>
 
 

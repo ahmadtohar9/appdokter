@@ -224,7 +224,6 @@ class Dokter_model extends CI_Model {
     }
 
 
-
 }
 
 ?>

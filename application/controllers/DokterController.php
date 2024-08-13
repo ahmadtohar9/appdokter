@@ -7,6 +7,7 @@ class DokterController extends CI_Controller {
         parent::__construct();
         $this->load->model('Dokter_model');
         $this->load->model('RegPeriksa_model');
+        $this->load->model('Resep_model');
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -247,6 +248,29 @@ class DokterController extends CI_Controller {
             $response = ['status' => 'success', 'message' => 'Resep berhasil ditambahkan'];
         } else {
             $response = ['status' => 'error', 'message' => 'Gagal menambahkan resep'];
+        }
+
+        echo json_encode($response);
+    }
+
+    public function get_resep_data()
+    {
+        $no_rawat = $this->input->get('no_rawat');
+        $resep_list = $this->Resep_model->get_resep_data($no_rawat);
+        echo json_encode($resep_list);
+    }
+
+    public function delete_resep()
+    {
+        $no_rawat = $this->input->post('no_rawat');
+        $kode_brng = $this->input->post('kode_brng');
+
+        $result = $this->Resep_model->delete_resep($no_rawat, $kode_brng);
+
+        if ($result) {
+            $response = ['status' => 'success', 'message' => 'Resep berhasil dihapus'];
+        } else {
+            $response = ['status' => 'error', 'message' => 'Gagal menghapus resep'];
         }
 
         echo json_encode($response);
