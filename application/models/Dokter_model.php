@@ -126,14 +126,6 @@ class Dokter_model extends CI_Model {
     }
 
 
-    // public function delete_soap($no_rawat) 
-    // {
-    //     $this->db->where('no_rawat', $no_rawat);
-    //     return $this->db->delete('pemeriksaan_ralan');
-    // }
-
-
-
     public function save_diagnosa($data)
     {
         // Cek apakah no_rawat sudah ada di tabel diagnosa_pasien
@@ -223,6 +215,10 @@ class Dokter_model extends CI_Model {
         return $this->db->insert('resep_dokter', $insert_data); // Sesuaikan dengan nama tabel yang benar
     }
 
+    public function get_barang_by_kode($kode)
+    {
+        return $this->db->get_where('gudangbarang', ['kode_brng' => $kode])->row();
+    }
 
 }
 

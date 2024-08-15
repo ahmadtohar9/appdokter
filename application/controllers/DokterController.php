@@ -112,21 +112,6 @@ class DokterController extends CI_Controller {
     }
 
 
-    // public function delete_soap($tahun, $bulan, $tanggal, $no_rawat)
-    // {
-    //     $full_no_rawat = "$tahun/$bulan/$tanggal/$no_rawat";
-
-    //     if ($this->Dokter_model->delete_soap($full_no_rawat)) {
-    //         $this->session->set_flashdata('message', 'Data berhasil dihapus.');
-    //     } else {
-    //         $this->session->set_flashdata('error', 'Gagal menghapus data.');
-    //     }
-
-    //     redirect('DokterController/index');
-
-    //     // redirect('DokterController/soap_form/' . $full_no_rawat);
-    // }
-
 
     public function get_penyakit() 
     {
@@ -276,54 +261,77 @@ class DokterController extends CI_Controller {
         echo json_encode($response);
     }
 
-    public function save_resep_batch() 
-{
-    $data = $this->input->post();
 
-    if (!isset($data['no_rawat']) || !isset($data['kd_dokter'])) {
-        $response = ['status' => 'error', 'message' => 'Data no_rawat atau kd_dokter tidak ditemukan'];
-        echo json_encode($response);
-        return;
-    }
+   public function save_resep_batch() 
+    {
+        $data = $this->input->post();
 
-    // Logika untuk memeriksa apakah resep dokter sudah ada atau belum
-    $existing_resep = $this->Dokter_model->get_existing_resep($data['no_rawat'], $data['kd_dokter']);
-    if ($existing_resep) {
-        $no_resep = $existing_resep->no_resep;
-    } else {
-        $no_resep = $this->Dokter_model->create_resep_dokter($data);
-    }
-
-    $duplicate_obat = false;
-
-    // Implementasikan logika penyimpanan batch untuk data resep
-    foreach ($data['kode_brng'] as $index => $kode) {
-        // Cek apakah obat dengan kode barang yang sama sudah ada di resep
-        $is_obat_exist = $this->Dokter_model->check_existing_obat($no_resep, $kode);
-        if ($is_obat_exist) {
-            $duplicate_obat = true;
-            continue; // Abaikan obat yang sudah ada dan lanjutkan ke iterasi berikutnya
+        if (!isset($data['no_rawat']) || !isset($data['kd_dokter'])) {
+            $response = ['status' => 'error', 'message' => 'Data no_rawat atau kd_dokter tidak ditemukan'];
+            echo json_encode($response);
+            return;
         }
 
-        $obat_data = [
-            'no_resep' => $no_resep,
-            'kode_brng' => $kode,
-            'jml' => $data['jml'][$index],
-            'aturan_pakai' => $data['aturan_pakai'][$index],
-            // tambahkan field lainnya jika diperlukan
-        ];
-        $this->db->insert('resep_dokter', $obat_data);
+        // Logika untuk memeriksa apakah resep dokter sudah ada atau belum
+        $existing_resep = $this->Dokter_model->get_existing_resep($data['no_rawat'], $data['kd_dokter']);
+        if ($existing_resep) {
+            $no_resep = $existing_resep->no_resep;
+        } else {
+            $no_resep = $this->Dokter_model->create_resep_dokter($data);
+        }
+
+        $duplicate_obat = false;
+        $overstock_obat = false;
+        $overstock_messages = [];
+        $success_insert = false;
+
+        // Implementasikan logika penyimpanan batch untuk data resep
+        foreach ($data['kode_brng'] as $index => $kode) {
+            // Dapatkan stok barang dari database
+            $barang = $this->Dokter_model->get_barang_by_kode($kode);
+            $jumlah = $data['jml'][$index];
+
+            if ($jumlah > $barang->stok) {
+                // Jika jumlah lebih besar dari stok
+                $overstock_obat = true;
+                $overstock_messages[] = "Jumlah untuk obat {$barang->nama_brng} melebihi stok yang tersedia ({$barang->stok}).";
+                continue;
+            }
+
+            // Cek apakah obat dengan kode barang yang sama sudah ada di resep
+            $is_obat_exist = $this->Dokter_model->check_existing_obat($no_resep, $kode);
+            if ($is_obat_exist) {
+                $duplicate_obat = true;
+                continue; // Abaikan obat yang sudah ada dan lanjutkan ke iterasi berikutnya
+            }
+
+            $obat_data = [
+                'no_resep' => $no_resep,
+                'kode_brng' => $kode,
+                'jml' => $jumlah,
+                'aturan_pakai' => $data['aturan_pakai'][$index],
+                // tambahkan field lainnya jika diperlukan
+            ];
+            $this->db->insert('resep_dokter', $obat_data);
+            $success_insert = true;
+        }
+
+        if ($overstock_obat) {
+            $response = ['status' => 'error', 'message' => implode(' ', $overstock_messages)];
+        } elseif ($duplicate_obat) {
+            if ($success_insert) {
+                $response = ['status' => 'warning', 'message' => 'Beberapa obat tidak ditambahkan karena sudah ada dalam resep, namun beberapa obat lain berhasil ditambahkan.'];
+            } else {
+                $response = ['status' => 'warning', 'message' => 'Beberapa obat tidak ditambahkan karena sudah ada dalam resep.'];
+            }
+        } else {
+            $response = ['status' => 'success', 'message' => 'Resep berhasil ditambahkan'];
+        }
+
+        // Kembalikan response
+        echo json_encode($response);
     }
 
-    if ($duplicate_obat) {
-        $response = ['status' => 'warning', 'message' => 'Beberapa obat tidak ditambahkan karena sudah ada dalam resep.'];
-    } else {
-        $response = ['status' => 'success', 'message' => 'Resep berhasil ditambahkan'];
-    }
-
-    // Kembalikan response
-    echo json_encode($response);
-}
 
 
 
