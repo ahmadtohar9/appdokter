@@ -1,4 +1,13 @@
-// Function for adding diagnosis
+$(document).ready(function() {
+    // Panggil loadDiagnosaData saat dokumen siap
+    loadDiagnosaData();
+
+    // Panggil loadDiagnosaData setiap kali modal ditutup
+    $('#diagnosaModal').on('hidden.bs.modal', function () {
+        loadDiagnosaData();
+    });
+});
+
 function submitDiagnosa() {
     var kd_penyakit = $('#kd_penyakit').val();
     var prioritas = $('#prioritas').val();
@@ -18,10 +27,6 @@ function submitDiagnosa() {
                 alert('Diagnosa berhasil ditambahkan');
                 $('#diagnosaModal').modal('hide');
                 $('#diagnosaForm')[0].reset();
-                // Pastikan data diagnosa diperbarui setelah modal ditutup
-                $('#diagnosaModal').on('hidden.bs.modal', function () {
-                    loadDiagnosaData();
-                });
             } else {
                 alert('Gagal menambahkan diagnosa: ' + res.message);
             }
@@ -39,7 +44,7 @@ function loadDiagnosaData() {
         method: "GET",
         data: { no_rawat: noRawat },
         success: function(data) {
-            console.log("Diagnosa data fetched successfully:", data);  // Debugging log
+            console.log("Diagnosa data fetched successfully:", data);
             try {
                 var diagnosaList = JSON.parse(data);
                 var tableBody = '';
@@ -59,7 +64,7 @@ function loadDiagnosaData() {
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            console.error('Error fetching diagnosa data:', textStatus, errorThrown);  // Debugging log
+            console.error('Error fetching diagnosa data:', textStatus, errorThrown);
         }
     });
 }
@@ -77,13 +82,13 @@ function deleteDiagnosa(no_rawat, kd_penyakit) {
                 var res = JSON.parse(response);
                 if (res.status === 'success') {
                     alert('Diagnosa berhasil dihapus');
-                    loadDiagnosaData();  // Memperbarui data diagnosa setelah penghapusan
+                    loadDiagnosaData();
                 } else {
                     alert('Gagal menghapus diagnosa: ' + res.message);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error deleting diagnosa:', textStatus, errorThrown);  // Debugging log
+                console.error('Error deleting diagnosa:', textStatus, errorThrown);
                 alert('Terjadi kesalahan: ' + textStatus);
             }
         });

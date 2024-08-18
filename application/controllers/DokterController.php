@@ -8,6 +8,7 @@ class DokterController extends CI_Controller {
         $this->load->model('Dokter_model');
         $this->load->model('RegPeriksa_model');
         $this->load->model('Resep_model');
+        $this->load->model('Soap_model');
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -32,83 +33,15 @@ class DokterController extends CI_Controller {
         echo json_encode($reg_periksa);
     }
 
-    public function get_soap_data() 
-    {
-        $no_rawat = $this->input->get('no_rawat');
-        if (empty($no_rawat)) {
-            echo json_encode([]);
-            return;
-        }
-
-        $data = $this->Dokter_model->get_soap_data($no_rawat);
-        echo json_encode($data);
-    }
-
-
-
-
     public function soap_form($tahun, $bulan, $tanggal, $no_rawat)
     {
         $full_no_rawat = "$tahun/$bulan/$tanggal/$no_rawat";
         $data['detail_pasien'] = $this->Dokter_model->get_patient_detail($full_no_rawat);
-        $data['soap_data_list'] = $this->Dokter_model->get_soap_data($full_no_rawat);
-        $data['soap_detail'] = $this->Dokter_model->get_soap_detail($full_no_rawat);
-
+        $data['soap_data_list'] = $this->Soap_model->get_soap_data($full_no_rawat);
+        $data['soap_detail'] = $this->Soap_model->get_single_soap($full_no_rawat);
         $this->load->view('template/header.php');
         $this->load->view('dokter/soap_form.php', $data);
         $this->load->view('template/footer.php');
-    }
-
-
-
-
-   public function save_soap()
-    {
-        $data = $this->input->post();
-        $full_no_rawat = $data['no_rawat'];
-        $is_edit_mode = $data['mode'] === 'edit';
-
-        if ($is_edit_mode) {
-            // Update existing SOAP data
-            $result = $this->Dokter_model->update_soap($data);
-        } else {
-            // Insert new SOAP data
-            $result = $this->Dokter_model->save_soap($data);
-        }
-
-        if ($result) {
-            if (!$is_edit_mode) {
-                // Update reg_periksa status only for new entries
-                $update_status = $this->Dokter_model->update_status_reg_periksa($full_no_rawat, 'Sudah');
-                if ($update_status) {
-                    $message = ['status' => 'success', 'message' => 'Data berhasil disimpan dan status diperbarui'];
-                } else {
-                    $message = ['status' => 'error', 'message' => 'Data berhasil disimpan, tetapi gagal memperbarui status'];
-                }
-            } else {
-                $message = ['status' => 'success', 'message' => 'Data berhasil diperbarui'];
-            }
-        } else {
-            $message = ['status' => 'error', 'message' => 'Gagal menyimpan data'];
-        }
-
-        echo json_encode($message);
-    }
-
-    public function delete_soap()
-    {
-        $no_rawat = $this->input->post('no_rawat');
-        $nip = $this->input->post('nip');
-
-        $result = $this->Dokter_model->delete_soap($no_rawat, $nip);
-
-        if ($result) {
-            $response = ['status' => 'success', 'message' => 'SOAP berhasil dihapus'];
-        } else {
-            $response = ['status' => 'error', 'message' => 'Gagal menghapus SOAP'];
-        }
-
-        echo json_encode($response);
     }
 
 
