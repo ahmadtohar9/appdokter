@@ -1,16 +1,15 @@
-
 $(document).ready(function(){
-    // Panggil loadDiagnosaData saat dokumen siap
+    // Muat data diagnosa saat halaman pertama kali dibuka
     loadDiagnosaData();
 
-    // Panggil loadDiagnosaData setiap kali modal ditutup
-    $('#diagnosaModal').on('hidden.bs.modal', function () {
-        loadDiagnosaData();
+    // Panggil loadDiagnosaData setiap kali data baru ditambahkan atau dihapus
+    $('#diagnosaForm').on('submit', function(e) {
+        e.preventDefault();
+        submitDiagnosa();
     });
 });
 
-
-
+// Fungsi untuk menambahkan diagnosa
 function submitDiagnosa() {
     var kd_penyakit = $('#kd_penyakit').val();
     var prioritas = $('#prioritas').val();
@@ -27,23 +26,21 @@ function submitDiagnosa() {
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
-                // Diagnosa berhasil ditambahkan
-                $('#diagnosaModal').modal('hide'); // Tutup modal
-                $('#diagnosaForm')[0].reset(); // Reset form
-                loadDiagnosaData(); // Segarkan data diagnosa
+                // Diagnosa berhasil ditambahkan, segarkan data
+                $('#diagnosaForm')[0].reset();
+                loadDiagnosaData(); // Muat ulang data diagnosa
             } else {
-                // Jika gagal, Anda bisa menampilkan pesan di halaman, misalnya dengan menambah teks ke elemen tertentu
+                // Tampilkan pesan error
                 $('#error_message').text('Gagal menambahkan diagnosa: ' + res.message).show();
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            // Anda bisa menampilkan pesan error di elemen lain atau hanya logging di console
             console.error('Terjadi kesalahan: ' + textStatus);
         }
     });
 }
 
-
+// Fungsi untuk memuat data diagnosa ke tabel
 function loadDiagnosaData() {
     var noRawat = $('[name="no_rawat"]').val();
     $.ajax({
@@ -60,8 +57,6 @@ function loadDiagnosaData() {
                     tableBody += '<td>' + (index + 1) + '</td>';
                     tableBody += '<td>' + diagnosa.kd_penyakit + '</td>';
                     tableBody += '<td>' + diagnosa.nm_penyakit + '</td>';
-                    // tableBody += '<td>' + diagnosa.status_penyakit + '</td>';
-                    // tableBody += '<td>' + diagnosa.prioritas + '</td>';
                     tableBody += '<td><button type="button" class="btn btn-danger btn-sm" onclick="deleteDiagnosa(\'' + diagnosa.no_rawat + '\', \'' + diagnosa.kd_penyakit + '\')">Hapus</button></td>';
                     tableBody += '</tr>';
                 });
@@ -76,6 +71,7 @@ function loadDiagnosaData() {
     });
 }
 
+// Fungsi untuk menghapus diagnosa
 function deleteDiagnosa(no_rawat, kd_penyakit) {
     if (confirm('Apakah Anda yakin ingin menghapus diagnosa ini?')) {
         $.ajax({
@@ -89,7 +85,7 @@ function deleteDiagnosa(no_rawat, kd_penyakit) {
                 var res = JSON.parse(response);
                 if (res.status === 'success') {
                     alert('Diagnosa berhasil dihapus');
-                    loadDiagnosaData();
+                    loadDiagnosaData(); // Segarkan data diagnosa
                 } else {
                     alert('Gagal menghapus diagnosa: ' + res.message);
                 }

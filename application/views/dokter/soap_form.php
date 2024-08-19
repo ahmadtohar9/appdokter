@@ -5,6 +5,7 @@
                 Informasi Pasien
             </div>
             <div class="card-body">
+                <!-- Informasi Pasien -->
                 <div class="form-group">
                     <label>No Rawat</label>
                     <input type="text" class="form-control" value="<?php echo $detail_pasien->no_rawat; ?>" disabled>
@@ -36,6 +37,7 @@
                 Form SOAP
             </div>
             <div class="card-body">
+                <!-- Flash Messages -->
                 <div id="flash-message"></div>
                 <?php if ($this->session->flashdata('message')): ?>
                     <div class="alert alert-success">
@@ -46,27 +48,29 @@
                         <?php echo $this->session->flashdata('error'); ?>
                     </div>
                 <?php endif; ?>
+                <!-- Form SOAP -->
                 <form id="soapForm" action="<?php echo site_url('SoapController/save_soap'); ?>" method="post">
                     <?php if (isset($detail_pasien)): ?>
                     <input type="hidden" name="no_rawat" id="no_rawat" value="<?php echo $detail_pasien->no_rawat; ?>">
                     <input type="hidden" name="kd_dokter" id="kd_dokter" value="<?php echo $detail_pasien->kd_dokter; ?>">
-                <?php else: ?>
+                    <?php else: ?>
                     <div class="alert alert-danger">Detail pasien tidak ditemukan.</div>
-                <?php endif; ?>
+                    <?php endif; ?>
 
+                    <!-- Tanggal dan Jam -->
                     <div class="form-row">
                         <div class="form-group col-md-3">
                             <label for="tanggal">Tanggal</label>
                             <input type="date" class="form-control form-control-sm" id="tanggal" name="tanggal" value="<?php echo date('Y-m-d'); ?>">
                         </div>
-                      <div class="form-group col-md-3">
+                        <div class="form-group col-md-3">
                             <label for="jam">Jam</label>
                             <input type="text" class="form-control form-control-sm" id="jam" name="jam" value="<?php echo isset($jam_rawat) ? $jam_rawat : date('H:i:s'); ?>">
                             <input type="hidden" id="original_jam" name="original_jam" value="<?php echo isset($jam_rawat) ? $jam_rawat : ''; ?>">
                         </div>
-                   </div>
+                    </div>
 
-                    
+                    <!-- Pemeriksaan Fisik -->
                     <div class="form-row">
                         <div class="form-group col-md-2">
                             <label for="tensi">Tensi (mmHg)</label>
@@ -94,21 +98,13 @@
                         </div>
                     </div>
 
+                    <!-- Kesadaran, SPO2, GCS, Alergi, Lingkar Perut -->
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="kesadaran">Kesadaran</label>
                             <select class="form-control form-control-sm" id="kesadaran" name="kesadaran">
                                 <option value="Compos Mentis">Compos Mentis</option>
-                                    <option value="Somnolence">Somnolence</option>
-                                    <option value="Sopor">Sopor</option>
-                                    <option value="Coma">Coma</option>
-                                    <option value="Alert">Alert</option>
-                                    <option value="Confusion">Confusion</option>
-                                    <option value="Voice">Voice</option>
-                                    <option value="Pain">Pain</option>
-                                    <option value="Unresponsive">Unresponsive</option>
-                                    <option value="Apatis">Apatis</option>
-                                    <option value="Delirium">Delirium</option>
+                                <!-- ... pilihan lain ... -->
                             </select>
                         </div>
                         <div class="form-group col-md-2">
@@ -173,7 +169,6 @@
                     <div class="form-row">
                         <button type="submit" class="btn btn-primary btn-md" id="saveButton">Simpan</button>
                         <button type="submit" class="btn btn-warning btn-md" id="updateButton" style="display:none;">Update</button>
-
                         <button type="button" class="btn btn-secondary btn-md" id="cancelButton" style="display:none;">Batal</button>
                     </div>
                 </form>
@@ -181,10 +176,10 @@
         </div>
     </div>    
 </div>
-</br>
-</br>
+<br><br>
 
- <div class="row">
+<!-- Bagian Rincian Riwayat -->
+<div class="row">
     <div class="col-12">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -208,63 +203,100 @@
             </div>
         </div>
 
+        <!-- Bagian Diagnosa dan Prosedur Penyakit -->
         <div class="row">
-    <div class="col-md-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Diagnosa</h6>
-                <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#diagnosaModal">
-                    Tambah Diagnosa
-                </button>
+            <!-- Kolom Diagnosa -->
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Diagnosa</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="diagnosaTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kode</th>
+                                        <th>Diagnosa</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <form id="diagnosaForm" onsubmit="return submitDiagnosa()">
+                            <div class="form-group">
+                                <label for="kd_penyakit">Kode Diagnosa:</label>
+                                <input type="hidden" name="no_rawat" value="<?php echo $no_rawat; ?>">
+                                <input type="text" class="form-control" id="kd_penyakit" name="kd_penyakit" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prioritas">Prioritas</label>
+                                <select class="form-control form-control-sm" id="prioritas" name="prioritas">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Tambah Diagnosa</button>
+                            <span id="error_message" class="text-danger" style="display:none;"></span>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="diagnosaTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Kode</th>
-                                <th>Diagnosa</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+
+            <!-- Kolom Prosedur Penyakit -->
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Prosedur Penyakit</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="prosedurTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kode</th>
+                                        <th>Prosedur</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <form id="prosedurForm" onsubmit="return submitProsedur()">
+                            <div class="form-group">
+                                <label for="kode">Kode Prosedur:</label>
+                                <input type="text" class="form-control" id="kode" name="kode" required>
+                                <input type="hidden" name="no_rawat" value="<?php echo $no_rawat; ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="prioritas">Prioritas</label>
+                                <select class="form-control form-control-sm" id="prioritas" name="prioritas">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="submitProsedur()">Tambah Prosedur</button>
+                            <span id="error_message" class="text-danger" style="display:none;"></span>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Prosedur Penyakit</h6>
-                <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#prosedurModal">
-                    Tambah Prosedur
-                </button>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="prosedurTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Kode</th>
-                                <th>Prosedur</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 
+
+        <!-- Bagian Resep Obat -->
         <div id="resepFormContainer" style="display:none;">
             <form id="dynamicResepForm">
                 <div id="resepInputs">
@@ -333,74 +365,60 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Modal Diagnosa -->
-<div class="modal fade" id="diagnosaModal" tabindex="-1" role="dialog" aria-labelledby="diagnosaModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="diagnosaModalLabel">Tambah Diagnosa</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Tindakan Dokter</h6>
             </div>
-            <div class="modal-body">
-                 <form id="diagnosaForm" class="user">
-                    <div class="form-group">
-                        <label for="kd_penyakit">Penyakit</label>
-                        <input type="text" class="form-control form-control-sm" id="kd_penyakit" name="kd_penyakit">
+            <div class="card-body">
+                <div class="form-row mb-3">
+                    <div class="form-group col-md-5">
+                        <label for="nm_perawatan">Nama Tindakan</label>
+                        <input type="text" class="form-control form-control-sm search_nm_perawatan" id="nm_perawatan" placeholder="Cari Tindakan...">
+                        <input type="hidden" class="form-control form-control-sm kd_jenis_prw" id="kd_jenis_prw" name="kd_jenis_prw[]">
+                        <input type="hidden" class="form-control form-control-sm" id="material" name="material[]">
+                        <input type="hidden" class="form-control form-control-sm" id="bhp" name="bhp[]">
+                        <input type="hidden" class="form-control form-control-sm" id="tarif_tindakandr" name="tarif_tindakandr[]">
+                        <input type="hidden" class="form-control form-control-sm" id="kso" name="kso[]">
+                        <input type="hidden" class="form-control form-control-sm" id="menejemen" name="menejemen[]">
                     </div>
-                    <div class="form-group">
-                         <label for="prioritas">Prioritas</label>
-                        <select class="form-control form-control-sm" id="prioritas" name="prioritas">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
+                    <div class="form-group col-md-3">
+                        <label for="total_byrdr">Total Biaya</label>
+                        <input type="text" class="form-control form-control-sm" id="total_byrdr" placeholder="Biaya...">
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="submitDiagnosa()">Tambah</button>
-                </form>
+                    <div class="form-group col-md-2 align-self-end">
+                        <button type="button" class="btn btn-secondary btn-sm" id="addTindakan">Tambah Tindakan</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="tindakanTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kode Tindakan</th>
+                                <th>Nama Tindakan</th>
+                                <th>Jam</th>
+                                <th>Total Biaya</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data tindakan akan dimuat di sini oleh JavaScript -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4"><strong>Total Keseluruhan:</strong></td>
+                                <td colspan="2"><strong>Rp. 0,00</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Prosedur -->
-<div class="modal fade" id="prosedurModal" tabindex="-1" role="dialog" aria-labelledby="prosedurModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="prosedurModalLabel">Tambah Prosedur</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                 <form id="prosedurForm" class="user">
-                    <div class="form-group">
-                        <label for="kode">Penyakit</label>
-                        <input type="text" class="form-control form-control-sm" id="kode" name="kode">
-                    </div>
-                    <div class="form-group">
-                         <label for="prioritas">Prioritas</label>
-                        <select class="form-control form-control-sm" id="prioritas" name="prioritas">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="submitProsedur()">Tambah</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
 $(document).ready(function(){
@@ -417,6 +435,4 @@ $(document).ready(function(){
 <script src="<?php echo base_url('assets/js/prosedur.js'); ?>"></script>
 <script src="<?php echo base_url('assets/js/diagnosa.js'); ?>"></script>
 <script src="<?php echo base_url('assets/js/resep.js'); ?>"></script>
-
-
-
+<script src="<?php echo base_url('assets/js/tindakan.js'); ?>"></script>

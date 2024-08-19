@@ -26,7 +26,6 @@ class ProsedurController extends CI_Controller
     public function save_prosedur($no_rawat = null)
     {
         if ($no_rawat === null) {
-            // Mengambil no_rawat dari input jika tidak disediakan sebagai argumen
             $no_rawat = $this->input->post('no_rawat');
         }
 
@@ -35,16 +34,11 @@ class ProsedurController extends CI_Controller
             return;
         }
 
-        $no_rawat = $this->input->post('no_rawat');
-        $kode = $this->input->post('kode');
-        $prioritas = $this->input->post('prioritas');
-        $status = 'Ralan'; // Atau ambil dari data lain sesuai kebutuhan
-
         $data = [
             'no_rawat' => $no_rawat,
             'kode' => $this->input->post('kode'),
             'prioritas' => $this->input->post('prioritas'),
-            'status' => $status,
+            'status' => 'Ralan',
         ];
 
         $result = $this->Prosedur_model->save_prosedur($data);
@@ -80,6 +74,7 @@ class ProsedurController extends CI_Controller
 
         echo json_encode($response);
     }
+
 
 
 }

@@ -19,12 +19,6 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
 
-<style>
-    .ui-autocomplete {
-        z-index: 1051 !important; /* Atur lebih tinggi dari z-index modal (1040) */
-    }
-</style>
-
 
 <body id="page-top">
 

@@ -39,10 +39,12 @@ class DokterController extends CI_Controller {
         $data['detail_pasien'] = $this->Dokter_model->get_patient_detail($full_no_rawat);
         $data['soap_data_list'] = $this->Soap_model->get_soap_data($full_no_rawat);
         $data['soap_detail'] = $this->Soap_model->get_single_soap($full_no_rawat);
+        $data['no_rawat'] = $full_no_rawat; // Pastikan ini ditambahkan
         $this->load->view('template/header.php');
         $this->load->view('dokter/soap_form.php', $data);
         $this->load->view('template/footer.php');
     }
+
 
     public function get_penyakit() 
     {
@@ -56,42 +58,35 @@ class DokterController extends CI_Controller {
     }
 
     public function save_diagnosa($no_rawat = null)
-        {
-            if ($no_rawat === null) {
-                // Mengambil no_rawat dari input jika tidak disediakan sebagai argumen
-                $no_rawat = $this->input->post('no_rawat');
-            }
-
-            if (!$no_rawat) {
-                show_error('No Rawat tidak diberikan', 400);
-                return;
-            }
-
+    {
+        if ($no_rawat === null) {
             $no_rawat = $this->input->post('no_rawat');
-            $kd_penyakit = $this->input->post('kd_penyakit');
-            $prioritas = $this->input->post('prioritas');
-            $status = 'Ralan'; // Atau ambil dari data lain sesuai kebutuhan
-
-            $data = [
-                'no_rawat' => $no_rawat,
-                'kd_penyakit' => $this->input->post('kd_penyakit'),
-                'prioritas' => $this->input->post('prioritas'),
-                'status' => $status,
-            ];
-
-            $result = $this->Dokter_model->save_diagnosa($data);
-            
-            if ($result) {
-                $response = ['status' => 'success', 'message' => 'Diagnosa berhasil disimpan'];
-            } else {
-                $response = ['status' => 'error', 'message' => 'Gagal menyimpan diagnosa'];
-            }
-
-            echo json_encode($response);
         }
 
-   
-   public function get_diagnosa_data()
+        if (!$no_rawat) {
+            show_error('No Rawat tidak diberikan', 400);
+            return;
+        }
+
+        $data = [
+            'no_rawat' => $no_rawat,
+            'kd_penyakit' => $this->input->post('kd_penyakit'),
+            'prioritas' => $this->input->post('prioritas'),
+            'status' => 'Ralan',
+        ];
+
+        $result = $this->Dokter_model->save_diagnosa($data);
+        
+        if ($result) {
+            $response = ['status' => 'success', 'message' => 'Diagnosa berhasil disimpan'];
+        } else {
+            $response = ['status' => 'error', 'message' => 'Gagal menyimpan diagnosa'];
+        }
+
+        echo json_encode($response);
+    }
+
+    public function get_diagnosa_data()
     {
         $no_rawat = $this->input->get('no_rawat');
         $diagnosa_list = $this->Dokter_model->get_diagnosa_data($no_rawat);
@@ -113,6 +108,7 @@ class DokterController extends CI_Controller {
 
         echo json_encode($response);
     }
+
 
     public function get_DataBarang()
     {
@@ -262,8 +258,6 @@ class DokterController extends CI_Controller {
         // Kembalikan response
         echo json_encode($response);
     }
-
-
 
 
 }

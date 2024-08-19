@@ -23,21 +23,17 @@ class Dokter_model extends CI_Model {
 
     public function save_diagnosa($data)
     {
-        // Cek apakah no_rawat sudah ada di tabel diagnosa_pasien
         $this->db->select('no_rawat');
         $this->db->from('diagnosa_pasien');
         $this->db->where('no_rawat', $data['no_rawat']);
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
-            // Jika data sudah ada, set status_penyakit menjadi 'Lama'
             $data['status_penyakit'] = 'Lama';
         } else {
-            // Jika data belum ada, set status_penyakit menjadi 'Baru'
             $data['status_penyakit'] = 'Baru';
         }
 
-        // Insert data ke tabel diagnosa_pasien
         return $this->db->insert('diagnosa_pasien', $data);
     }
 
@@ -46,7 +42,7 @@ class Dokter_model extends CI_Model {
         $this->db->select('diagnosa_pasien.*, penyakit.nm_penyakit');
         $this->db->from('diagnosa_pasien');
         $this->db->join('penyakit', 'diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit');
-        $this->db->where('diagnosa_pasien.no_rawat', $no_rawat); // pastikan kolom benar
+        $this->db->where('diagnosa_pasien.no_rawat', $no_rawat);
         $query = $this->db->get();
         return $query->result();
     }
@@ -57,6 +53,7 @@ class Dokter_model extends CI_Model {
         $this->db->where('kd_penyakit', $kd_penyakit);
         return $this->db->delete('diagnosa_pasien');
     }
+
 
     public function get_existing_resep($no_rawat, $kd_dokter)
     {
