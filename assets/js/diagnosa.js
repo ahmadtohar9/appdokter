@@ -1,4 +1,5 @@
-$(document).ready(function() {
+
+$(document).ready(function(){
     // Panggil loadDiagnosaData saat dokumen siap
     loadDiagnosaData();
 
@@ -7,6 +8,8 @@ $(document).ready(function() {
         loadDiagnosaData();
     });
 });
+
+
 
 function submitDiagnosa() {
     var kd_penyakit = $('#kd_penyakit').val();
@@ -24,18 +27,22 @@ function submitDiagnosa() {
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
-                alert('Diagnosa berhasil ditambahkan');
-                $('#diagnosaModal').modal('hide');
-                $('#diagnosaForm')[0].reset();
+                // Diagnosa berhasil ditambahkan
+                $('#diagnosaModal').modal('hide'); // Tutup modal
+                $('#diagnosaForm')[0].reset(); // Reset form
+                loadDiagnosaData(); // Segarkan data diagnosa
             } else {
-                alert('Gagal menambahkan diagnosa: ' + res.message);
+                // Jika gagal, Anda bisa menampilkan pesan di halaman, misalnya dengan menambah teks ke elemen tertentu
+                $('#error_message').text('Gagal menambahkan diagnosa: ' + res.message).show();
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            alert('Terjadi kesalahan: ' + textStatus);
+            // Anda bisa menampilkan pesan error di elemen lain atau hanya logging di console
+            console.error('Terjadi kesalahan: ' + textStatus);
         }
     });
 }
+
 
 function loadDiagnosaData() {
     var noRawat = $('[name="no_rawat"]').val();
@@ -53,8 +60,8 @@ function loadDiagnosaData() {
                     tableBody += '<td>' + (index + 1) + '</td>';
                     tableBody += '<td>' + diagnosa.kd_penyakit + '</td>';
                     tableBody += '<td>' + diagnosa.nm_penyakit + '</td>';
-                    tableBody += '<td>' + diagnosa.status_penyakit + '</td>';
-                    tableBody += '<td>' + diagnosa.prioritas + '</td>';
+                    // tableBody += '<td>' + diagnosa.status_penyakit + '</td>';
+                    // tableBody += '<td>' + diagnosa.prioritas + '</td>';
                     tableBody += '<td><button type="button" class="btn btn-danger btn-sm" onclick="deleteDiagnosa(\'' + diagnosa.no_rawat + '\', \'' + diagnosa.kd_penyakit + '\')">Hapus</button></td>';
                     tableBody += '</tr>';
                 });

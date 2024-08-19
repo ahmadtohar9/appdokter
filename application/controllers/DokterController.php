@@ -44,8 +44,6 @@ class DokterController extends CI_Controller {
         $this->load->view('template/footer.php');
     }
 
-
-
     public function get_penyakit() 
     {
         $term = $this->input->get('term');

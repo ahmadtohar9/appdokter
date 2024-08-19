@@ -114,11 +114,13 @@ function loadResepData() {
                     tableBody += '</tr>';
                 });
 
-                var tableFooter = '<tr><td colspan="5"><strong>Total Keseluruhan:</strong></td>';
-                tableFooter += '<td colspan="2"><strong>Rp. ' + formatRupiah(totalKeseluruhan) + '</strong></td></tr>';
+                var tableFooter = '<tr>';
+                tableFooter += '<td colspan="5"><strong>Total Keseluruhan:</strong></td>';
+                tableFooter += '<td colspan="2"><strong>Rp. ' + formatRupiah(totalKeseluruhan) + '</strong></td>';
+                tableFooter += '</tr>';
 
                 $('#resepTable tbody').html(tableBody);
-                $('#resepTable tfoot').html(tableFooter);
+                $('#resepTable tfoot').html(tableFooter); // Tampilkan footer di bagian bawah tabel
 
             } catch (error) {
                 console.error('Error parsing resep data:', error);
@@ -129,6 +131,7 @@ function loadResepData() {
         }
     });
 }
+
 
 // Fungsi untuk menghapus resep
 function deleteResep(no_resep, kode_brng) {
