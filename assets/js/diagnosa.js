@@ -1,12 +1,6 @@
 $(document).ready(function(){
     // Muat data diagnosa saat halaman pertama kali dibuka
     loadDiagnosaData();
-
-    // Panggil loadDiagnosaData setiap kali data baru ditambahkan atau dihapus
-    $('#diagnosaForm').on('submit', function(e) {
-        e.preventDefault();
-        submitDiagnosa();
-    });
 });
 
 // Fungsi untuk menambahkan diagnosa
@@ -26,8 +20,9 @@ function submitDiagnosa() {
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
-                // Diagnosa berhasil ditambahkan, segarkan data
-                $('#diagnosaForm')[0].reset();
+                // Mengosongkan input setelah berhasil menyimpan data
+                $('#kd_penyakit').val('');
+                $('#prioritas').val('1');
                 loadDiagnosaData(); // Muat ulang data diagnosa
             } else {
                 // Tampilkan pesan error
@@ -84,7 +79,6 @@ function deleteDiagnosa(no_rawat, kd_penyakit) {
             success: function(response) {
                 var res = JSON.parse(response);
                 if (res.status === 'success') {
-                    alert('Diagnosa berhasil dihapus');
                     loadDiagnosaData(); // Segarkan data diagnosa
                 } else {
                     alert('Gagal menghapus diagnosa: ' + res.message);

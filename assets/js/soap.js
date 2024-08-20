@@ -175,7 +175,7 @@ $(document).ready(function() {
                                   '<div class="d-flex justify-content-start mt-2">' +
                                   '<button type="button" class="btn btn-warning btn-sm mr-2" onclick="editSOAP(\'' + item.no_rawat + '\', \'' + item.tgl_perawatan + '\')">' +
                                   '<i class="fas fa-edit"></i> Edit</button>' +
-                                  '<button type="button" class="btn btn-danger btn-sm" onclick="deleteSOAP(\'' + item.no_rawat + '\', \'' + item.nip + '\')">' +
+                                  '<button type="button" class="btn btn-danger btn-sm" onclick="deleteSOAP(\'' + item.no_rawat + '\', \'' + item.nip + '\', \'' + item.jam_rawat + '\')">' +
                                   '<i class="fas fa-trash-alt"></i> Hapus</button>' +
                                   '</div>' +
                                   '</td>';
@@ -192,8 +192,8 @@ $(document).ready(function() {
         }
     });
 }
-    // Fungsi untuk menghapus data SOAP
-    window.deleteSOAP = function(no_rawat, nip) {
+    window.deleteSOAP = function(no_rawat, nip) 
+    {
         if (confirm('Apakah Anda yakin ingin menghapus SOAP ini?')) {
             $.ajax({
                 url: base_url + "SoapController/delete_soap",
@@ -219,6 +219,7 @@ $(document).ready(function() {
             });
         }
     }
+
 
     function clearSOAPForm() {
         $('#soapForm').find('input:text, input[type=date], input[type=time], textarea').val('');

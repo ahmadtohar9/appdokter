@@ -210,12 +210,13 @@ $(document).ready(function() {
     });
 }
 
-
-    // Fungsi untuk memformat angka ke dalam format Rupiah
-    function formatRupiah(number) {
-        return parseInt(number).toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR'
-        }).replace('Rp', '');
-    }
+function formatRupiah(number) {
+    return parseInt(number).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0, // Menghilangkan ,00
+        maximumFractionDigits: 0  // Menghilangkan ,00
+    }).replace('Rp', '');
+}
 });
+

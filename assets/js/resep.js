@@ -234,6 +234,9 @@ function applyAutocomplete(element) {
 function formatRupiah(number) {
     return parseInt(number).toLocaleString('id-ID', {
         style: 'currency',
-        currency: 'IDR'
+        currency: 'IDR',
+        minimumFractionDigits: 0, // Menghilangkan ,00
+        maximumFractionDigits: 0  // Menghilangkan ,00
     }).replace('Rp', '');
 }
+

@@ -38,6 +38,10 @@ function submitProsedur() {
     var prioritas = $('#prioritas').val();
     var no_rawat = $('[name="no_rawat"]').val();
 
+    console.log('Kode:', kode);
+    console.log('Prioritas:', prioritas);
+    console.log('No Rawat:', no_rawat);
+
     $.ajax({
         url: base_url + "ProsedurController/save_prosedur",
         method: "POST",
@@ -49,22 +53,21 @@ function submitProsedur() {
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
-                $('#prosedurForm')[0].reset();      // Mengosongkan form
-                loadProsedurData();                 // Memuat ulang data prosedur
-                // Jika ingin tanpa notifikasi
+                // Mengosongkan input setelah berhasil menyimpan data
+                $('#kode').val('');
+                $('#prioritas').val('1');
+                loadProsedurData(); // Muat ulang data diagnosa
             } else {
-                // Cukup tampilkan error message jika ada masalah
-                console.error('Gagal menambahkan prosedur: ' + res.message);
+                // Tampilkan pesan error
+                $('#error_message').text('Gagal menambahkan diagnosa: ' + res.message).show();
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            // Log error di console untuk debugging
             console.error('Terjadi kesalahan: ' + textStatus);
         }
     });
 
-    // Prevent form submission and page reload
-    return false;
+    return false; // Mencegah reload halaman
 }
 
 
@@ -98,6 +101,7 @@ function loadProsedurData() {
         }
     });
 }
+
 
 function deleteProsedur(no_rawat, kode) {
     if (confirm('Apakah Anda yakin ingin menghapus prosedur ini?')) {

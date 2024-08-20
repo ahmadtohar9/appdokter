@@ -48,12 +48,13 @@ class SoapController extends CI_Controller {
         echo json_encode($message);
     }
 
-    public function delete_soap() {
+    public function delete_soap() 
+    {
         $no_rawat = $this->input->post('no_rawat');
         $nip = $this->input->post('nip');
 
         if (empty($no_rawat) || empty($nip)) {
-            echo json_encode(['status' => 'error', 'message' => 'No Rawat atau NIP tidak ditemukan']);
+            echo json_encode(['status' => 'error', 'message' => 'No Rawat, NIP, atau Jam Rawat tidak ditemukan']);
             return;
         }
 
@@ -67,6 +68,8 @@ class SoapController extends CI_Controller {
 
         echo json_encode($response);
     }
+
+
 
     public function get_single_soap() {
         $no_rawat = $this->input->get('no_rawat');
