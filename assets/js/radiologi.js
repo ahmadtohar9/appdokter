@@ -118,15 +118,6 @@ $(document).ready(function() {
 }
 
 
-    // function updateTindakanTable(totalKeseluruhan) {
-    //     var tableFooter = `
-    //         <tr>
-    //             <td colspan="7"><strong>Total Keseluruhan:</strong></td>
-    //             <td><strong>Rp. ${formatRupiah(totalKeseluruhan)}</strong></td>
-    //         </tr>
-    //     `;
-    //     $('#tindakanRadiologiTable tfoot').html(tableFooter);
-    // }
 
     window.deleteTindakanPermintaanRadiologi = function(no_rawat, no_order) {
 	    if (confirm('Apakah Anda yakin ingin menghapus tindakan ini?')) {
