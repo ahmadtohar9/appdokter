@@ -115,8 +115,6 @@ $(document).ready(function() {
 });
 
 
-
-
     function loadPermintaanLabData() 
     {
             var noRawat = $('[name="no_rawat"]').val();
@@ -190,22 +188,36 @@ $(document).ready(function() {
             try {
                 var hasilLabList = JSON.parse(data);
                 var tableBody = '';
-                var totalKeseluruhan = 0;
+                var indexCounter = 1; // Inisialisasi counter untuk nomor
 
                 hasilLabList.forEach(function(hasil, index) {
-                    tableBody += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${hasil.noorder || ''}</td>
-                            <td>${hasil.tgl_permintaan || ''}</td>
-                            <td>${hasil.jam_permintaan || ''}</td>
-                            <td>${hasil.nm_perawatan || ''}</td>
-                            <td>${hasil.Pemeriksaan || ''}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteHasilLab('${hasil.no_rawat}', '${hasil.noorder}')">Hapus</button>
-                            </td>
-                        </tr>
-                    `;
+                    var currentOrder = hasil.noorder;
+                    var groupedResults = hasilLabList.filter(item => item.noorder === currentOrder);
+                    var rowspan = groupedResults.length;
+
+                    if (index === 0 || hasilLabList[index - 1].noorder !== currentOrder) {
+                        // Tampilkan baris pertama untuk setiap order dengan rowspan untuk menggabungkan baris yang sama
+                        tableBody += `
+                            <tr>
+                                <td rowspan="${rowspan}">${indexCounter++}</td>
+                                <td rowspan="${rowspan}">${hasil.noorder || ''}</td>
+                                <td rowspan="${rowspan}">${hasil.tgl_permintaan || ''}</td>
+                                <td rowspan="${rowspan}">${hasil.jam_permintaan || ''}</td>
+                                <td rowspan="${rowspan}">${hasil.nm_perawatan || ''}</td>
+                                <td><input type="radio" name="detailLab_${hasil.noorder}" value="${hasil.Pemeriksaan}" checked> ${hasil.Pemeriksaan}</td>
+                                <td rowspan="${rowspan}">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteHasilLab('${hasil.no_rawat}', '${hasil.noorder}')">Hapus</button>
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        // Tampilkan baris tambahan untuk pemeriksaan yang sama dalam order yang sama
+                        tableBody += `
+                            <tr>
+                                <td><input type="radio" name="detailLab_${hasil.noorder}" value="${hasil.Pemeriksaan}"> ${hasil.Pemeriksaan}</td>
+                            </tr>
+                        `;
+                    }
                 });
 
                 $('#hasilLabTable tbody').html(tableBody);
@@ -219,6 +231,47 @@ $(document).ready(function() {
         }
     });
 }
+
+
+//     function loadLabResults() {
+//     var noRawat = $('[name="no_rawat"]').val();
+//     $.ajax({
+//         url: base_url + 'LaboratoriumController/get_hasil_lab',
+//         method: "GET",
+//         data: { no_rawat: noRawat },
+//         success: function(data) {
+//             try {
+//                 var hasilLabList = JSON.parse(data);
+//                 var tableBody = '';
+//                 var totalKeseluruhan = 0;
+
+//                 hasilLabList.forEach(function(hasil, index) {
+//                     tableBody += `
+//                         <tr>
+//                             <td>${index + 1}</td>
+//                             <td>${hasil.noorder || ''}</td>
+//                             <td>${hasil.tgl_permintaan || ''}</td>
+//                             <td>${hasil.jam_permintaan || ''}</td>
+//                             <td>${hasil.nm_perawatan || ''}</td>
+//                             <td>${hasil.Pemeriksaan || ''}</td>
+//                             <td>
+//                                 <button type="button" class="btn btn-danger btn-sm" onclick="deleteHasilLab('${hasil.no_rawat}', '${hasil.noorder}')">Hapus</button>
+//                             </td>
+//                         </tr>
+//                     `;
+//                 });
+
+//                 $('#hasilLabTable tbody').html(tableBody);
+
+//             } catch (error) {
+//                 console.error('Error parsing hasil lab data:', error);
+//             }
+//         },
+//         error: function(jqXHR, textStatus, errorThrown) {
+//             console.error('Error fetching hasil lab data:', textStatus, errorThrown);
+//         }
+//     });
+// }
 
 
     // Fungsi untuk memuat data pemeriksaan laboratorium

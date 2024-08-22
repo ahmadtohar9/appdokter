@@ -35,8 +35,10 @@ class RegPeriksa_model extends CI_Model {
     {
         return [
             'Assesment Dokter',
-            'SOAP',
-            'Billing Pasien'
+            'Pelayanan Rawat Jalan',
+            'Diagnosa & Prosedur',
+            'Permintaan Laboratorium',
+            'Permintaan Radiologi'
         ];
     }
 }
