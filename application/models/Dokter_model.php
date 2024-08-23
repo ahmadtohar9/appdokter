@@ -4,7 +4,7 @@ class Dokter_model extends CI_Model {
 
     public function get_patient_detail($no_rawat)
     {
-        $this->db->select('reg_periksa.no_rawat, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, dokter.kd_dokter, poliklinik.nm_poli');
+        $this->db->select('reg_periksa.no_rawat, reg_periksa.no_rkm_medis, pasien.nm_pasien, pasien.tgl_lahir, pasien.jk, dokter.nm_dokter, dokter.kd_dokter, poliklinik.nm_poli');
         $this->db->from('reg_periksa');
         $this->db->join('pasien', 'reg_periksa.no_rkm_medis = pasien.no_rkm_medis');
         $this->db->join('dokter', 'reg_periksa.kd_dokter = dokter.kd_dokter');

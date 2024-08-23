@@ -68,23 +68,32 @@
     </div>
 </div>
 <script>
-    function navigateToForm(option, noRawat) {
-        var baseUrl = "<?php echo site_url('DokterController/'); ?>";
-        
-        var dateSegments = noRawat.split('/'); // Memisahkan tanggal dari no_rawat
-        var tahun = dateSegments[0];
-        var bulan = dateSegments[1];
-        var tanggal = dateSegments[2];
-        var rawatId = dateSegments[3];
+    function navigateToForm(option, noRawat) 
+    {
+        var baseUrlDokter = "<?php echo site_url('DokterController/'); ?>";
+        var baseUrlMedisDalam = "<?php echo site_url('MedisDalamController/'); ?>";
         
         switch(option) {
+            case 'Assesment Dokter':
+                window.location.href = baseUrlMedisDalam + "AsesmentDokter_form/" + noRawat;
+                break;
             case 'Pelayanan Rawat Jalan':
-                window.location.href = baseUrl + "dokterRajal_form/" + noRawat;
+                window.location.href = baseUrlDokter + "dokterRajal_form/" + noRawat;
+                break;
+            case 'Diagnosa & Prosedur':
+                window.location.href = baseUrlDokter + "diagnosaProsedur_form/" + noRawat;
+                break;
+            case 'Permintaan Laboratorium':
+                window.location.href = baseUrlDokter + "permintaanLaboratorium_form/" + noRawat;
+                break;
+            case 'Permintaan Radiologi':
+                window.location.href = baseUrlDokter + "permintaanRadiologi_form/" + noRawat;
                 break;
             default:
-                alert("Maaf Menu Belum Tersedia.");
+                alert("Maaf, Menu Belum Tersedia.");
         }
     }
+
 
     $(document).ready(function(){
         function fetchNewData() {

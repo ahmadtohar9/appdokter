@@ -68,6 +68,8 @@
                         <div class="form-group">
                             <label for="tgl_permintaan">Tanggal Permintaan</label>
                             <input type="date" class="form-control" id="tgl_permintaan" value="<?php echo date('Y-m-d'); ?>">
+                           <input type="hidden" name="no_rawat" id="no_rawat" value="<?php echo $detail_pasien->no_rawat; ?>">
+                            <input type="hidden" name="kd_dokter" id="kd_dokter" value="<?php echo $detail_pasien->kd_dokter; ?>">
                         </div>
                     </div>
                     <div class="col-md-6">

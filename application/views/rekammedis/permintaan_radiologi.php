@@ -7,6 +7,8 @@
                 <div class="form-group col-md-2">
                     <label for="tgl_sampel">Tanggal Sampel</label>
                     <input type="date" class="form-control form-control-sm" id="tgl_permintaan" name="tgl_permintaan" value="<?php echo date('Y-m-d'); ?>">
+                    <input type="hidden" name="no_rawat" id="no_rawat" value="<?php echo $detail_pasien->no_rawat; ?>">
+                    <input type="hidden" name="kd_dokter" id="kd_dokter" value="<?php echo $detail_pasien->kd_dokter; ?>">
                 </div>
                 <div class="form-group col-md-2">
                     <label for="jam_sampel">Jam Sampel</label>

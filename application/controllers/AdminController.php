@@ -1,6 +1,6 @@
 <?php
 
-class DokterController extends CI_Controller {
+class AdminController extends CI_Controller {
 
     public function __construct()
     {
@@ -50,43 +50,6 @@ class DokterController extends CI_Controller {
         $this->load->view('rekammedis/tindakan_ralan_dokter.php', $data);
         $this->load->view('rekammedis/permintaan_radiologi.php', $data);
         $this->load->view('rekammedis/permintaan_laboratorium.php', $data);
-        $this->load->view('template/footer.php');
-    }
-
-    public function diagnosaProsedur_form($tahun, $bulan, $tanggal, $no_rawat)
-    {
-        $full_no_rawat = "$tahun/$bulan/$tanggal/$no_rawat";
-        $data['detail_pasien'] = $this->Dokter_model->get_patient_detail($full_no_rawat);
-        $data['no_rawat'] = $full_no_rawat; // Pastikan ini ditambahkan
-
-        $this->load->view('template/header.php');
-        $this->load->view('rekammedis/form_diagnosa.php', $data);
-        $this->load->view('template/footer.php');
-    }
-
-    public function permintaanLaboratorium_form($tahun, $bulan, $tanggal, $no_rawat)
-    {
-        $full_no_rawat = "$tahun/$bulan/$tanggal/$no_rawat";
-        $data['detail_pasien'] = $this->Dokter_model->get_patient_detail($full_no_rawat);
-        $data['soap_data_list'] = $this->Soap_model->get_soap_data($full_no_rawat);
-        $data['soap_detail'] = $this->Soap_model->get_single_soap($full_no_rawat);
-        $data['no_rawat'] = $full_no_rawat; // Pastikan ini ditambahkan
-
-        $this->load->view('template/header.php');
-        $this->load->view('rekammedis/permintaan_laboratorium.php', $data);
-        $this->load->view('template/footer.php');
-    }
-
-    public function permintaanRadiologi_form($tahun, $bulan, $tanggal, $no_rawat)
-    {
-        $full_no_rawat = "$tahun/$bulan/$tanggal/$no_rawat";
-        $data['detail_pasien'] = $this->Dokter_model->get_patient_detail($full_no_rawat);
-        $data['soap_data_list'] = $this->Soap_model->get_soap_data($full_no_rawat);
-        $data['soap_detail'] = $this->Soap_model->get_single_soap($full_no_rawat);
-        $data['no_rawat'] = $full_no_rawat; // Pastikan ini ditambahkan
-
-        $this->load->view('template/header.php');
-        $this->load->view('rekammedis/permintaan_radiologi.php', $data);
         $this->load->view('template/footer.php');
     }
 
