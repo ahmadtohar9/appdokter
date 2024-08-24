@@ -225,7 +225,7 @@ $config['allow_get_array'] = TRUE;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 4;
 
 /*
 |--------------------------------------------------------------------------
@@ -530,3 +530,12 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+$config['upload_base_path'] = '/webapps/berkasrawat/pages/upload/gambarmedislokalis/';
+$config['server_ip'] = ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_NAME'] === '127.0.0.1') 
+    ? 'http://127.0.0.1' 
+    : 'http://your-server-ip-or-domain';
+$config['upload_url'] = $config['server_ip'] . $config['upload_base_path'];
+$config['upload_full_path'] = $_SERVER['DOCUMENT_ROOT'] . $config['upload_base_path'];
+
+

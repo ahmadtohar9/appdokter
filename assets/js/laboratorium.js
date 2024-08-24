@@ -232,48 +232,6 @@ $(document).ready(function() {
     });
 }
 
-
-//     function loadLabResults() {
-//     var noRawat = $('[name="no_rawat"]').val();
-//     $.ajax({
-//         url: base_url + 'LaboratoriumController/get_hasil_lab',
-//         method: "GET",
-//         data: { no_rawat: noRawat },
-//         success: function(data) {
-//             try {
-//                 var hasilLabList = JSON.parse(data);
-//                 var tableBody = '';
-//                 var totalKeseluruhan = 0;
-
-//                 hasilLabList.forEach(function(hasil, index) {
-//                     tableBody += `
-//                         <tr>
-//                             <td>${index + 1}</td>
-//                             <td>${hasil.noorder || ''}</td>
-//                             <td>${hasil.tgl_permintaan || ''}</td>
-//                             <td>${hasil.jam_permintaan || ''}</td>
-//                             <td>${hasil.nm_perawatan || ''}</td>
-//                             <td>${hasil.Pemeriksaan || ''}</td>
-//                             <td>
-//                                 <button type="button" class="btn btn-danger btn-sm" onclick="deleteHasilLab('${hasil.no_rawat}', '${hasil.noorder}')">Hapus</button>
-//                             </td>
-//                         </tr>
-//                     `;
-//                 });
-
-//                 $('#hasilLabTable tbody').html(tableBody);
-
-//             } catch (error) {
-//                 console.error('Error parsing hasil lab data:', error);
-//             }
-//         },
-//         error: function(jqXHR, textStatus, errorThrown) {
-//             console.error('Error fetching hasil lab data:', textStatus, errorThrown);
-//         }
-//     });
-// }
-
-
     // Fungsi untuk memuat data pemeriksaan laboratorium
     function loadLabTests(limit = 15) {
         $.ajax({

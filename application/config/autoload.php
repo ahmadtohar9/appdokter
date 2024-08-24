@@ -29,7 +29,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | 7. Models
 |
 */
-
+/*
+----ini difungsikan untuk mengatur upload gambar yang ada pada application/config/upload_config
+*/
+$autoload['config'] = array('upload_config');
 /*
 | -------------------------------------------------------------------
 |  Auto-load Packages

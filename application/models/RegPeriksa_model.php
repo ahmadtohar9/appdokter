@@ -34,7 +34,9 @@ class RegPeriksa_model extends CI_Model {
     public function get_dropdown_options()
     {
         return [
-            'Assesment Dokter',
+            'Assesment Penyakit Dalam',
+            'Assesment Kebidanan',
+            'Assesment Anak',
             'Pelayanan Rawat Jalan',
             'Diagnosa & Prosedur',
             'Permintaan Laboratorium',
