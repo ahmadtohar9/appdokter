@@ -74,6 +74,8 @@
         var baseUrlMedisDalam = "<?php echo site_url('MedisDalamController/'); ?>";
         var baseUrlMedisKandungan = "<?php echo site_url('MedisKandunganController/'); ?>";
         var baseUrlMedisAnak = "<?php echo site_url('MedisAnakController/'); ?>";
+        var baseUrlMedisOrthopedi = "<?php echo site_url('MedisOrthopediController/'); ?>";
+        // var baseUrlMedisMata = "<?php echo site_url('MedisMataController/'); ?>";
         
         switch(option) {
             case 'Assesment Penyakit Dalam':
@@ -85,6 +87,12 @@
             case 'Assesment Anak':
                 window.location.href = baseUrlMedisAnak + "MedisAnak_form/" + noRawat;
                 break;
+            case 'Assesment Orthopedi':
+                window.location.href = baseUrlMedisOrthopedi + "MedisOrthopedi_form/" + noRawat;
+                break;
+            // case 'Assesment Mata':
+            //     window.location.href = baseUrlMedisMata + "MedisMata_form/" + noRawat;
+            //     break;
             case 'Pelayanan Rawat Jalan':
                 window.location.href = baseUrlDokter + "dokterRajal_form/" + noRawat;
                 break;

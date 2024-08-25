@@ -1,11 +1,11 @@
 $(document).ready(function(){
-    loadAsesmenMedisAnakData();
+    loadAsesmenMedisOrthopediData();
 });
 
-function submitAsesmenMedisAnak(event) {
+function submitAsesmenMedisOrthopedi(event) {
     event.preventDefault();
 
-    var formData = $('#asesmenMedisAnakForm').serialize();
+    var formData = $('#asesmenMedisOrthopediForm').serialize();
     var canvas = document.getElementById('lokalisCanvas');
     var imageData = canvas.toDataURL('image/png');
     var no_rawat = document.getElementById('no_rawat').value;
@@ -14,7 +14,7 @@ function submitAsesmenMedisAnak(event) {
     $('#submitBtn').prop('disabled', true);
 
     $.ajax({
-        url: base_url + "MedisAnakController/save_asesmenMedisAnak",
+        url: base_url + "MedisOrthopediController/save_asesmenMedisOrthopedi",
         method: "POST",
         data: formData,
     }).done(function(response) {
@@ -23,7 +23,7 @@ function submitAsesmenMedisAnak(event) {
             if (res.status === 'success') {
                 if (imageData && imageData !== "data:,") {
                     return $.ajax({
-                        url: base_url + "MedisAnakController/saveLokalisImage",
+                        url: base_url + "MedisOrthopediController/saveLokalisImage",
                         method: "POST",
                         data: {
                             imageData: imageData,
@@ -31,7 +31,7 @@ function submitAsesmenMedisAnak(event) {
                         }
                     });
                 } else {
-                    loadAsesmenMedisAnakData();
+                    loadAsesmenMedisOrthopediData();
                     return Promise.resolve();
                 }
             } else {
@@ -47,7 +47,7 @@ function submitAsesmenMedisAnak(event) {
             if (imageResponse) {
                 let imgRes = JSON.parse(imageResponse);
                 if (imgRes.status === 'success' || imgRes.message.includes('sudah ada')) {
-                    loadAsesmenMedisAnakData();
+                    loadAsesmenMedisOrthopediData();
                     alert(imgRes.message);
                 } else {
                     alert('Gagal menyimpan gambar: ' + imgRes.message);
@@ -64,23 +64,19 @@ function submitAsesmenMedisAnak(event) {
         $('#submitBtn').prop('disabled', false);
 
         // Reset form dan clear canvas setelah data berhasil disimpan
-        $('#asesmenMedisAnakForm')[0].reset();
+        $('#asesmenMedisOrthopediForm')[0].reset();
         clearCanvas(); // Bersihkan canvas setelah berhasil menyimpan data
         resetForm(); // Kembali ke mode tambah data setelah update atau tambah
     });
 }
 
-
-
-
-
 // Objek global untuk menyimpan data asesmen
-var asesmenMedisAnakData = {};
+var asesmenMedisOrthopediData = {};
 
-function loadAsesmenMedisAnakData() {
+function loadAsesmenMedisOrthopediData() {
     var noRawat = $('[name="no_rawat"]').val();
     $.ajax({
-        url: base_url + "MedisAnakController/get_asesmenMedisAnak_data",
+        url: base_url + "MedisOrthopediController/get_asesmenMedisOrthopedi_data",
         method: "GET",
         data: { no_rawat: noRawat },
         success: function(data) {
@@ -92,60 +88,59 @@ function loadAsesmenMedisAnakData() {
                 var upload_url = "<?php echo $this->config->item('upload_url'); ?>";
 
                 // Reset asesmenData setiap kali data baru dimuat
-                asesmenMedisAnakData = {};
+                asesmenMedisOrthopediData = {};
 
                 if (Array.isArray(asesmenList) && asesmenList.length > 0) {
                     asesmenList.forEach(function(asesmen, index) {
                         // Simpan data asesmen di asesmenData
-                        asesmenMedisAnakData[asesmen.no_rawat] = asesmen;
+                        asesmenMedisOrthopediData[asesmen.no_rawat] = asesmen;
 
                         tableBody += '<tr>';
                         tableBody += '<td style="width: 30px; text-align: center;">' + (index + 1) + '</td>';
                         tableBody += '<td>';
                         tableBody += '<table class="table table-sm table-bordered" width="100%" cellspacing="0">';
 
-                        if (asesmen.tanggal) tableBody += '<td colspan="3"><b style="color: maroon;">Tanggal :</b><br/> <span style="color: black;">' + asesmen.tanggal + '</span></td>';
+                       if (asesmen.tanggal) tableBody += '<td colspan="3"><b style="color: maroon;">Tanggal :</b><br/> <span style="color: black;">' + asesmen.tanggal + '</span></td>';
                         if (asesmen.nm_dokter) tableBody += '<td colspan="3"><b style="color: maroon;">Dokter :</b><br/> <span style="color: black;">' + asesmen.nm_dokter + '</span></td>';
                         if (asesmen.anamnesis) tableBody += '<td colspan="3"><b style="color: maroon;">Anamnesis :</b><br/> <span style="color: black;">' + asesmen.anamnesis + '</span></td>';
                         if (asesmen.hubungan) tableBody += '<td colspan="3"><b style="color: maroon;">Hubungan :</b><br/> <span style="color: black;">' + asesmen.hubungan + '</span></td>';
 
                         tableBody += '<tr>';
-                        if (asesmen.keadaan) tableBody += '<td colspan="2"><b style="color: maroon;">Keadaan:</b> <span style="color: black;">' + asesmen.keadaan + '</span></td>';
                         if (asesmen.kesadaran) tableBody += '<td colspan="3"><b style="color: maroon;">Kesadaran:</b> <span style="color: black;">' + asesmen.kesadaran + '</span></td>';
+                        if (asesmen.status) tableBody += '<td colspan="3"><b style="color: maroon;">Status Nutrisi:</b> <span style="color: black;">' + asesmen.status + '</span></td>';
                         if (asesmen.td) tableBody += '<td colspan="2"><b style="color: maroon;">TD:</b> <span style="color: black;">' + asesmen.td + '</span></td>';
                         if (asesmen.nadi) tableBody += '<td colspan="2"><b style="color: maroon;">Nadi:</b> <span style="color: black;">' + asesmen.nadi + '</span></td>';
-                        if (asesmen.rr) tableBody += '<td colspan="3"><b style="color: maroon;">RR/Menit:</b> <span style="color: black;">' + asesmen.rr + '</span></td>';
+                        if (asesmen.suhu) tableBody += '<td colspan="2"><b style="color: maroon;">Suhu:</b> <span style="color: black;">' + asesmen.suhu + '</span></td>';
                         tableBody += '</tr>';
 
                         tableBody += '<tr>';
-                        if (asesmen.suhu) tableBody += '<td colspan="3"><b style="color: maroon;">Suhu:</b> <span style="color: black;">' + asesmen.suhu + '</span></td>';
-                        if (asesmen.spo) tableBody += '<td colspan="3"><b style="color: maroon;">SPO:</b> <span style="color: black;">' + asesmen.spo + '</span></td>';
+                        if (asesmen.rr) tableBody += '<td colspan="3"><b style="color: maroon;">RR/Menit:</b> <span style="color: black;">' + asesmen.rr + '</span></td>';
                         if (asesmen.bb) tableBody += '<td colspan="3"><b style="color: maroon;">BB:</b> <span style="color: black;">' + asesmen.bb + '</span></td>';
-                        if (asesmen.tb) tableBody += '<td colspan="3"><b style="color: maroon;">TB:</b> <span style="color: black;">' + asesmen.tb + '</span></td>';
+                        if (asesmen.nyeri) tableBody += '<td colspan="3"><b style="color: maroon;">Nyeri:</b> <span style="color: black;">' + asesmen.nyeri + '</span></td>';
+                        if (asesmen.gcs) tableBody += '<td colspan="3"><b style="color: maroon;">GCS:</b> <span style="color: black;">' + asesmen.gcs + '</span></td>';
                         tableBody += '</tr>';
                     
                         tableBody += '<tr>';
                         if (asesmen.kepala) tableBody += '<td colspan="3"><b style="color: maroon;">Kepala:</b><br/> <span style="color: black;">' + asesmen.kepala + '</span></td>';
-                        if (asesmen.mata) tableBody += '<td colspan="3"><b style="color: maroon;">Mata:</b><br/> <span style="color: black;">' + asesmen.mata + '</span></td>';
-                        if (asesmen.gigi) tableBody += '<td colspan="3"><b style="color: maroon;">Gigi:</b><br/> <span style="color: black;">' + asesmen.gigi + '</span></td>';
-                        if (asesmen.tht) tableBody += '<td colspan="3"><b style="color: maroon;">THT:</b><br/> <span style="color: black;">' + asesmen.tht + '</span></td>';
-                        tableBody += '</tr>';
-
-                        tableBody += '<tr>';
                         if (asesmen.thoraks) tableBody += '<td colspan="3"><b style="color: maroon;">Thoraks:</b><br/> <span style="color: black;">' + asesmen.thoraks + '</span></td>';
                         if (asesmen.abdomen) tableBody += '<td colspan="3"><b style="color: maroon;">Abdomen:</b><br/> <span style="color: black;">' + asesmen.abdomen + '</span></td>';
-                        if (asesmen.genital) tableBody += '<td colspan="2"><b style="color: maroon;">Genital:</b><br/> <span style="color: black;">' + asesmen.genital + '</span></td>';
-                        if (asesmen.ekstremitas) tableBody += '<td colspan="2"><b style="color: maroon;">Ekstremitas:</b><br/> <span style="color: black;">' + asesmen.ekstremitas + '</span></td>';
-                        if (asesmen.kulit) tableBody += '<td colspan="2"><b style="color: maroon;">Kulit:</b><br/> <span style="color: black;">' + asesmen.kulit + '</span></td>';
+                        if (asesmen.ekstremitas) tableBody += '<td colspan="3"><b style="color: maroon;">Ekstremitas:</b><br/> <span style="color: black;">' + asesmen.ekstremitas + '</span></td>';
                         tableBody += '</tr>';
 
                         tableBody += '<tr>';
-                        if (asesmen.ket_fisik) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Keterangan Fisik:</b><br/> <span style="color: black;">' + asesmen.ket_fisik + '</span></td></tr>';
+                        if (asesmen.columna) tableBody += '<td colspan="4"><b style="color: maroon;">Columna:</b><br/> <span style="color: black;">' + asesmen.columna + '</span></td>';
+                        if (asesmen.muskulos) tableBody += '<td colspan="4"><b style="color: maroon;">Muskulos:</b><br/> <span style="color: black;">' + asesmen.muskulos + '</span></td>';
+                        if (asesmen.genetalia) tableBody += '<td colspan="4"><b style="color: maroon;">Genetalia:</b><br/> <span style="color: black;">' + asesmen.genetalia + '</span></td>';
                         tableBody += '</tr>';
+
+                        tableBody += '<tr>';
+                        if (asesmen.lainnya) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Keterangan Lainnya:</b><br/> <span style="color: black;">' + asesmen.lainnya + '</span></td></tr>';
+                        tableBody += '</tr>';
+
                         tableBody += '<tr>';
                         if (asesmen.image) {
                             // Hapus baris gambar lama (jika ada) sebelum menambahkan yang baru
-                            $('#asesmenMedisAnakTable tbody tr.gambar-lokalis-row').remove();
+                            $('#asesmenMedisOrthopediTable tbody tr.gambar-lokalis-row').remove();
                             var imageUrl = uploadUrl + asesmen.image; // Pastikan uploadUrl sudah diinisialisasi
                             console.log('Image URL:', imageUrl); // Debugging URL
                             // Tambahkan baris gambar baru
@@ -156,19 +151,36 @@ function loadAsesmenMedisAnakData() {
                             tableBody += '</td>';
                             tableBody += '</tr>';
                         }
+                        tableBody += '<tr>';
+                        if (asesmen.ket_fisik) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Keterangan Fisik:</b><br/> <span style="color: black;">' + asesmen.ket_fisik + '</span></td></tr>';
+                        tableBody += '</tr>';
 
                         if (asesmen.ket_lokalis) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Keterangan Lokalis:</b><br/> <span style="color: black;">' + asesmen.ket_lokalis + '</span></td></tr>';
                         tableBody += '</tr>';
 
-                        if (asesmen.penunjang) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Pemeriksaan Penunjang:</b><br/> <span style="color: black;">' + asesmen.penunjang + '</span></td></tr>';
-                        if (asesmen.diagnosis) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Diagnosis:</b><br/> <span style="color: black;">' + asesmen.diagnosis + '</span></td></tr>';
-                        if (asesmen.tata) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Tatalaksana:</b><br/> <span style="color: black;">' + asesmen.tata + '</span></td></tr>';
-                        if (asesmen.konsul) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Konsul/Rujukan:</b><br/> <span style="color: black;">' + asesmen.konsul + '</span></td></tr>';
+                        tableBody += '<tr>';
+                        if (asesmen.lab) tableBody += '<td colspan="4"><b style="color: maroon;">Laboratorium:</b><br/> <span style="color: black;">' + asesmen.lab + '</span></td>';
+                        if (asesmen.rad) tableBody += '<td colspan="4"><b style="color: maroon;">Radiologi:</b><br/> <span style="color: black;">' + asesmen.rad + '</span></td>';
+                        if (asesmen.pemeriksaan) tableBody += '<td colspan="4"><b style="color: maroon;">Pemeriksaan Lainnya:</b><br/> <span style="color: black;">' + asesmen.pemeriksaan + '</span></td>';
+                        tableBody += '</tr>';
+
+                        tableBody += '<tr>';
+                        if (asesmen.diagnosis) tableBody += '<td colspan="6"><b style="color: maroon;">Diagnosis Utama:</b><br/> <span style="color: black;">' + asesmen.diagnosis + '</span></td>';
+                        if (asesmen.diagnosis2) tableBody += '<td colspan="6"><b style="color: maroon;">Diagnosis Sekunder:</b><br/> <span style="color: black;">' + asesmen.diagnosis2 + '</span></td>';
+                        tableBody += '</tr>';
+
+                        tableBody += '<tr>';
+                        if (asesmen.permasalahan) tableBody += '<td colspan="4"><b style="color: maroon;">Permasalahan:</b><br/> <span style="color: black;">' + asesmen.permasalahan + '</span></td>';
+                        if (asesmen.terapi) tableBody += '<td colspan="4"><b style="color: maroon;">Terapi:</b><br/> <span style="color: black;">' + asesmen.terapi + '</span></td>';
+                        if (asesmen.tindakan) tableBody += '<td colspan="4"><b style="color: maroon;">Tindakan:</b><br/> <span style="color: black;">' + asesmen.tindakan + '</span></td>';
+                        tableBody += '</tr>';
+
+                        if (asesmen.edukasi) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Edukasi:</b><br/> <span style="color: black;">' + asesmen.edukasi + '</span></td></tr>';
 
                         // Tambah tombol Edit dan Hapus
                         tableBody += '<tr><td colspan="12">';
-                        tableBody += '<button type="button" class="btn btn-warning btn-sm" onclick="editAsesmenMedisAnak(\'' + asesmen.no_rawat + '\')">Edit</button> ';
-                        tableBody += '<button type="button" class="btn btn-danger btn-sm" onclick="deleteAsesmenMedisAnak(\'' + asesmen.no_rawat + '\')">Hapus</button>';
+                        tableBody += '<button type="button" class="btn btn-warning btn-sm" onclick="editAsesmenMedisOrthopedi(\'' + asesmen.no_rawat + '\')">Edit</button> ';
+                        tableBody += '<button type="button" class="btn btn-danger btn-sm" onclick="deleteAsesmenMedisOrthopedi(\'' + asesmen.no_rawat + '\')">Hapus</button>';
                         tableBody += '</td></tr>';
 
                         tableBody += '</table>';
@@ -179,20 +191,18 @@ function loadAsesmenMedisAnakData() {
                     tableBody += '<tr><td colspan="3" class="text-center">Data masih kosong</td></tr>';
                 }
 
-                $('#asesmenMedisAnakTable tbody').html(tableBody);
+                $('#asesmenMedisOrthopediTable tbody').html(tableBody);
             } catch (error) {
                 console.error('Error parsing asesmen data:', error);
-                $('#asesmenMedisAnakTable tbody').html('<tr><td colspan="3" class="text-center">Terjadi kesalahan dalam memuat data</td></tr>');
+                $('#asesmenMedisOrthopediTable tbody').html('<tr><td colspan="3" class="text-center">Terjadi kesalahan dalam memuat data</td></tr>');
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.error('Error fetching asesmen data:', textStatus, errorThrown);
-            $('#asesmenMedisAnakTable tbody').html('<tr><td colspan="3" class="text-center">Terjadi kesalahan dalam memuat data</td></tr>');
+            $('#asesmenMedisOrthopediTable tbody').html('<tr><td colspan="3" class="text-center">Terjadi kesalahan dalam memuat data</td></tr>');
         }
     });
 }
-
-
 
 let canvas = document.getElementById('lokalisCanvas');
 let ctx = canvas.getContext('2d');
@@ -240,7 +250,6 @@ function resetLokalis() {
     ctx.drawImage(document.getElementById('lokalisImage'), 0, 0, canvas.width, canvas.height); // Mengembalikan gambar awal
 }
 
-
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
 canvas.addEventListener('mousemove', draw);
@@ -261,7 +270,7 @@ function saveLokalis() {
     let no_rawat = document.getElementById('no_rawat').value;
 
     $.ajax({
-        url: base_url + "MedisAnakController/saveLokalisImage",
+        url: base_url + "MedisOrthopediController/saveLokalisImage",
         method: "POST",
         data: {
             imageData: imageData,
@@ -272,11 +281,11 @@ function saveLokalis() {
                 let res = JSON.parse(response);
 
                 if (res.status === 'success') {
-                alert(res.message);
-                loadAsesmenMedisAnakData(); // Panggil fungsi untuk memuat ulang data setelah gambar berhasil disimpan
-            } else {
-                alert('Gagal menyimpan gambar: ' + res.message);
-            }
+                    alert(res.message);
+                    loadAsesmenMedisOrthopediData(); // Panggil fungsi untuk memuat ulang data setelah gambar berhasil disimpan
+                } else {
+                    alert('Gagal menyimpan gambar: ' + res.message);
+                }
 
             } catch (error) {
                 console.error('Error parsing JSON:', error);
@@ -291,10 +300,10 @@ function saveLokalis() {
     });
 }
 
-function deleteAsesmenMedisAnak(no_rawat) {
+function deleteAsesmenMedisOrthopedi(no_rawat) {
     if (confirm('Apakah Anda yakin ingin menghapus asesmen ini beserta gambar yang terkait?')) {
         $.ajax({
-            url: base_url + "MedisAnakController/delete_asesmenMedisAnak",
+            url: base_url + "MedisOrthopediController/delete_asesmenMedisOrthopedi",
             method: "POST",
             data: { no_rawat: no_rawat },
             success: function(response) {
@@ -302,7 +311,7 @@ function deleteAsesmenMedisAnak(no_rawat) {
                 if (res.status === 'success') {
                     // Panggil fungsi untuk menghapus gambar juga
                     deleteLokalisImage(no_rawat, function() {
-                        loadAsesmenMedisAnakData(); // Muat ulang data asesmen setelah penghapusan
+                        loadAsesmenMedisOrthopediData(); // Muat ulang data asesmen setelah penghapusan
                     });
                 } else {
                     alert('Gagal menghapus asesmen: ' + res.message);
@@ -318,20 +327,20 @@ function deleteAsesmenMedisAnak(no_rawat) {
 
 function deleteLokalisImage(no_rawat, callback) {
     $.ajax({
-        url: base_url + "MedisAnakController/deleteLokalisImage",
+        url: base_url + "MedisOrthopediController/deleteLokalisImage",
         method: "POST",
         data: { no_rawat: no_rawat },
         success: function(response) {
             let res = JSON.parse(response);
             if (res.status === 'success' || res.message === 'File gambar tidak ditemukan.') {
-                loadAsesmenMedisAnakData();
+                loadAsesmenMedisOrthopediData();
                 if (callback) {
                     callback(); // Panggil callback untuk memuat ulang data
                 }
             } else {
                 if (res.message !== 'File gambar tidak ditemukan.') {
                     alert('Gagal menghapus gambar: ' + res.message);
-                    loadAsesmenMedisAnakData();
+                    loadAsesmenMedisOrthopediData();
                 }
                 if (callback) {
                     callback(); // Tetap panggil callback untuk melanjutkan penghapusan asesmen
@@ -347,11 +356,10 @@ function deleteLokalisImage(no_rawat, callback) {
     });
 }
 
-
 // Fungsi untuk mengedit asesmen
-function editAsesmenMedisAnak(no_rawat) {
+function editAsesmenMedisOrthopedi(no_rawat) {
     // Dapatkan data asesmen berdasarkan no_rawat dari asesmenData
-    var asesmen = asesmenMedisAnakData[no_rawat];
+    var asesmen = asesmenMedisOrthopediData[no_rawat];
 
     if (asesmen) {
         // Isi form dengan data asesmen
@@ -365,6 +373,8 @@ function editAsesmenMedisAnak(no_rawat) {
         $('#rpd').val(asesmen.rpd);
         $('#rpk').val(asesmen.rpk);
         $('#rpo').val(asesmen.rpo);
+        $('#status').val(asesmen.status);
+        $('#nyeri').val(asesmen.nyeri);
         $('#alergi').val(asesmen.alergi);
         $('#keadaan').val(asesmen.keadaan);
         $('#gcs').val(asesmen.gcs);
@@ -377,23 +387,28 @@ function editAsesmenMedisAnak(no_rawat) {
         $('#bb').val(asesmen.bb);
         $('#tb').val(asesmen.tb);
         $('#kepala').val(asesmen.kepala);
-        $('#mata').val(asesmen.mata);
-        $('#gigi').val(asesmen.gigi);
-        $('#tht').val(asesmen.tht);
         $('#thoraks').val(asesmen.thoraks);
         $('#abdomen').val(asesmen.abdomen);
-        $('#genital').val(asesmen.genital);
+        $('#genitalia').val(asesmen.genitalia);
         $('#ekstremitas').val(asesmen.ekstremitas);
-        $('#kulit').val(asesmen.kulit);
+        $('#columna').val(asesmen.columna);
+        $('#muskulos').val(asesmen.muskulos);
+        $('#lainnya').val(asesmen.lainnya);
         $('#ket_fisik').val(asesmen.ket_fisik);
+        $('#lab').val(asesmen.lab);
+        $('#rad').val(asesmen.rad);
+        $('#pemeriksaan').val(asesmen.pemeriksaan);
         $('#ket_lokalis').val(asesmen.ket_lokalis);
         $('#penunjang').val(asesmen.penunjang);
         $('#diagnosis').val(asesmen.diagnosis);
-        $('#tata').val(asesmen.tata);
-        $('#konsul').val(asesmen.konsul);
+        $('#diagnosis2').val(asesmen.diagnosis2);
+        $('#permasalahan').val(asesmen.permasalahan);
+        $('#terapi').val(asesmen.terapi);
+        $('#tindakan').val(asesmen.tindakan);
+        $('#edukasi').val(asesmen.edukasi);
 
         // Pindahkan scroll ke form setelah data diisi
-        $('#asesmenMedisAnakForm')[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('#asesmenMedisOrthopediForm')[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         // Fokus pada elemen pertama dalam form
         $('#anamnesis').focus();
@@ -408,22 +423,22 @@ function editAsesmenMedisAnak(no_rawat) {
 }
 
 // Fungsi untuk memperbarui data asesmen
-function updateAsesmenMedisAnak(event) {
+function updateAsesmenMedisOrthopedi(event) {
     event.preventDefault(); // Mencegah default form submit behavior
 
-    var formData = $('#asesmenMedisAnakForm').serialize();
+    var formData = $('#asesmenMedisOrthopediForm').serialize();
 
     $.ajax({
-        url: base_url + "MedisAnakController/update_asesmenMedisAnak",
+        url: base_url + "MedisOrthopediController/update_asesmenMedisOrthopedi",
         method: "POST",
         data: formData,
         success: function(response) {
             try {
                 var res = JSON.parse(response);
                 if (res.status === 'success') {
-                    $('#asesmenMedisAnakForm')[0].reset(); 
+                    $('#asesmenMedisOrthopediForm')[0].reset(); 
                     clearCanvas(); // Bersihkan canvas setelah update
-                    loadAsesmenMedisAnakData(); 
+                    loadAsesmenMedisOrthopediData(); 
                     resetForm(); // Kembali ke mode tambah data setelah update
                 } else {
                     $('#error_message').text('Gagal mengupdate asesmen: ' + res.message).show();
@@ -443,7 +458,7 @@ function cancelEdit() {
 }
 
 function resetForm() {
-    $('#asesmenMedisAnakForm')[0].reset(); 
+    $('#asesmenMedisOrthopediForm')[0].reset(); 
     clearCanvas(); // Bersihkan canvas setelah reset
     $('#submitBtn').show();
     $('#updateButton').hide();

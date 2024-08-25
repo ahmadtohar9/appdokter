@@ -88,7 +88,8 @@ class MedisAnakController extends CI_Controller {
     }
 
     public function saveLokalisImage() 
-{
+    
+    {
     $no_rawat = $this->input->post('no_rawat');
     
     // Cek apakah gambar sudah ada di database
@@ -154,23 +155,6 @@ public function deleteLokalisImage() {
     }
 }
 
-
-
-    // public function deleteLokalisImage() 
-    // {
-    //     $no_rawat = $this->input->post('no_rawat');
-
-    //     // Cek apakah data gambar ada di database
-    //     $imageData = $this->db->get_where('tohar_gambar_lokalis', ['no_rawat' => $no_rawat])->row();
-        
-    //     if ($imageData) {
-    //         // Hapus data dari database
-    //         $this->db->delete('tohar_gambar_lokalis', ['no_rawat' => $no_rawat]);
-    //         echo json_encode(['status' => 'success', 'message' => 'Data gambar berhasil dihapus dari database.']);
-    //     } else {
-    //         echo json_encode(['status' => 'error', 'message' => 'Data gambar tidak ditemukan.']);
-    //     }
-    // }
 
 
 
