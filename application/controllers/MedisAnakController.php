@@ -7,6 +7,7 @@ class MedisAnakController extends CI_Controller {
         parent::__construct();
         $this->load->model('MedisAnak_model');
         $this->load->model('Dokter_model');
+        $this->load->model('Lokalis_model');
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -88,75 +89,70 @@ class MedisAnakController extends CI_Controller {
     }
 
     public function saveLokalisImage() 
-    
     {
-    $no_rawat = $this->input->post('no_rawat');
-    
-    // Cek apakah gambar sudah ada di database
-    $existing_image = $this->db->get_where('tohar_gambar_lokalis', ['no_rawat' => $no_rawat])->row();
+        $no_rawat = $this->input->post('no_rawat');
+        $kd_dokter = $this->input->post('kd_dokter');
+        
+        // Cek apakah gambar sudah ada di database untuk kombinasi no_rawat dan kd_dokter
+        $existing_image = $this->Lokalis_model->getLokalisImage($no_rawat, $kd_dokter);
 
-    if ($existing_image) {
-        echo json_encode(['status' => 'error', 'message' => 'Gambar untuk no rawat ini sudah ada. Anda hanya bisa mengunggah gambar satu kali.']);
-        return;
-    }
-
-    $imageData = $this->input->post('imageData');
-    $imageName = 'lokalis_' . uniqid() . '.jpg';
-
-    // Gunakan konfigurasi global untuk path penyimpanan
-    $path = $this->config->item('upload_full_path') . $imageName;
-
-    // Cek apakah direktori dapat ditulisi
-    if (is_writable($this->config->item('upload_full_path'))) {
-        // Menyimpan data gambar ke file
-        $imageData = str_replace('data:image/png;base64,', '', $imageData);
-        $imageData = base64_decode($imageData);
-
-        if (file_put_contents($path, $imageData)) {
-            // Simpan nama atau path gambar ke database
-            $this->db->insert('tohar_gambar_lokalis', [
-                'no_rawat' => $no_rawat,
-                'image' => $imageName
-            ]);
-            echo json_encode(['status' => 'success', 'message' => 'Gambar berhasil disimpan.', 'image' => $imageName]);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan gambar.']);
+        if ($existing_image) {
+            echo json_encode(['status' => 'error', 'message' => 'Gambar untuk no rawat ini dan dokter ini sudah ada. Anda hanya bisa mengunggah gambar satu kali.']);
+            return;
         }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Direktori tidak dapat ditulisi.']);
-    }
-}
 
-public function deleteLokalisImage() {
-    $no_rawat = $this->input->post('no_rawat');
+        $imageData = $this->input->post('imageData');
+        $imageName = 'lokalis_' . uniqid() . '.jpg';
 
-    // Ambil data gambar dari database
-    $imageData = $this->db->get_where('tohar_gambar_lokalis', ['no_rawat' => $no_rawat])->row();
+        // Gunakan konfigurasi global untuk path penyimpanan
+        $path = $this->config->item('upload_full_path') . $imageName;
 
-    if ($imageData) {
-        $imageName = $imageData->image;
-        $filePath = $this->config->item('upload_full_path') . $imageName;
+        // Cek apakah direktori dapat ditulisi
+        if (is_writable($this->config->item('upload_full_path'))) {
+            // Menyimpan data gambar ke file
+            $imageData = str_replace('data:image/png;base64,', '', $imageData);
+            $imageData = base64_decode($imageData);
 
-        // Hapus dari database terlebih dahulu
-        $this->db->delete('tohar_gambar_lokalis', ['no_rawat' => $no_rawat]);
-
-        // Cek apakah file ada dan bisa dihapus
-        if (file_exists($filePath)) {
-            if (unlink($filePath)) {
-                echo json_encode(['status' => 'success', 'message' => 'Gambar berhasil dihapus.']);
+            if (file_put_contents($path, $imageData)) {
+                // Simpan nama atau path gambar ke database
+                $this->Lokalis_model->saveLokalisImage($no_rawat, $kd_dokter, $imageName);
+                echo json_encode(['status' => 'success', 'message' => 'Gambar berhasil disimpan.', 'image' => $imageName]);
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus file gambar dari folder.']);
+                echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan gambar.']);
             }
         } else {
-            echo json_encode(['status' => 'success', 'message' => 'File gambar tidak ditemukan, namun data telah dihapus dari database.']);
+            echo json_encode(['status' => 'error', 'message' => 'Direktori tidak dapat ditulisi.']);
         }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Data gambar tidak ditemukan.']);
     }
-}
 
+    public function deleteLokalisImage() {
+        $no_rawat = $this->input->post('no_rawat');
+        $kd_dokter = $this->input->post('kd_dokter');
 
+        // Ambil data gambar dari database berdasarkan no_rawat dan kd_dokter
+        $imageData = $this->Lokalis_model->getLokalisImage($no_rawat, $kd_dokter);
 
+        if ($imageData) {
+            $imageName = $imageData->image;
+            $filePath = $this->config->item('upload_full_path') . $imageName;
+
+            // Hapus dari database terlebih dahulu
+            $this->Lokalis_model->deleteLokalisImage($no_rawat, $kd_dokter);
+
+            // Cek apakah file ada dan bisa dihapus
+            if (file_exists($filePath)) {
+                if (unlink($filePath)) {
+                    echo json_encode(['status' => 'success', 'message' => 'Gambar berhasil dihapus.']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus file gambar dari folder.']);
+                }
+            } else {
+                echo json_encode(['status' => 'success', 'message' => 'File gambar tidak ditemukan, namun data telah dihapus dari database.']);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Data gambar tidak ditemukan.']);
+        }
+    }
 
     public function update_asesmenMedisAnak() {
         $no_rawat = $this->input->post('no_rawat');
@@ -217,4 +213,6 @@ public function deleteLokalisImage() {
             echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus asesmen']);
         }
     }
+
+    
 }

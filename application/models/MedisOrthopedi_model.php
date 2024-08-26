@@ -24,40 +24,5 @@ class MedisOrthopedi_model extends CI_Model {
         $this->db->where('no_rawat', $no_rawat);
         return $this->db->delete('penilaian_medis_ralan_orthopedi');
     }
-
-    public function saveLokalisImage($no_rawat, $imageName) 
-    {
-        $data = array(
-            'no_rawat' => $no_rawat,
-            'image' => $imageName
-        );
-        return $this->db->insert('tohar_gambar_lokalis', $data);
-    }
-
-    public function getLokalisImagesByNoRawat($no_rawat) 
-    {
-        $this->db->where('no_rawat', $no_rawat);
-        $query = $this->db->get('tohar_gambar_lokalis');
-        return $query->result();
-    }
-
-    public function deleteLokalisImage($id) {
-        $this->db->where('id', $id);
-        $image = $this->db->get('tohar_gambar_lokalis')->row();
-
-        if ($image) {
-            // Hapus file gambar dari server
-            $file_path = './webapps/berkasrawat/pages/upload/gambarlokalis/' . $image->image;
-            if (file_exists($file_path)) {
-                unlink($file_path);
-            }
-
-            // Hapus data dari database
-            $this->db->where('id', $id);
-            return $this->db->delete('tohar_gambar_lokalis');
-        }
-
-        return false;
-    }
 }
 ?>

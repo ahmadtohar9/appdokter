@@ -303,7 +303,8 @@
 <br/>
 <script>
     var uploadUrl = '<?php echo $this->config->item('upload_url'); ?>';
-    console.log('Upload URL:', uploadUrl); // Debugging untuk melihat nilai uploadUrl
+console.log('Upload URL:', uploadUrl); // Debugging untuk melihat nilai uploadUrl
+
 </script>
 
 <script src="<?php echo base_url('assets/js/medisDokter/medisOrthopedi.js'); ?>"></script>

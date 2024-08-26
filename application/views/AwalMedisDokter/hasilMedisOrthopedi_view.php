@@ -36,7 +36,7 @@
         </div>
     </div>
 </div>
-<script>
+<!-- <script>
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
     });
@@ -45,4 +45,4 @@
         e.preventDefault();
         alert('Maaf ini Data Rahasia dan Tidak Diperbolehkan Menyalin isi File Rekam Medis Elektronik Secara Sepihak.');
     });
-</script>
+</script> -->

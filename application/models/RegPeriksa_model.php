@@ -38,7 +38,7 @@ class RegPeriksa_model extends CI_Model {
             'Assesment Kebidanan',
             'Assesment Anak',
             'Assesment Orthopedi',
-            // 'Assesment Mata',
+            'Assesment Mata',
             'Pelayanan Rawat Jalan',
             'Diagnosa & Prosedur',
             'Permintaan Laboratorium',

@@ -90,9 +90,9 @@
             case 'Assesment Orthopedi':
                 window.location.href = baseUrlMedisOrthopedi + "MedisOrthopedi_form/" + noRawat;
                 break;
-            // case 'Assesment Mata':
-            //     window.location.href = baseUrlMedisMata + "MedisMata_form/" + noRawat;
-            //     break;
+            case 'Assesment Mata':
+                window.location.href = baseUrlMedisMata + "MedisMata_form/" + noRawat;
+                break;
             case 'Pelayanan Rawat Jalan':
                 window.location.href = baseUrlDokter + "dokterRajal_form/" + noRawat;
                 break;

@@ -7,6 +7,7 @@ class MedisOrthopediController extends CI_Controller {
         parent::__construct();
         $this->load->model('MedisOrthopedi_model');
         $this->load->model('Dokter_model');
+        $this->load->model('Lokalis_model');
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -91,12 +92,13 @@ class MedisOrthopediController extends CI_Controller {
     public function saveLokalisImage() 
     {
         $no_rawat = $this->input->post('no_rawat');
+        $kd_dokter = $this->input->post('kd_dokter');
         
-        // Cek apakah gambar sudah ada di database
-        $existing_image = $this->db->get_where('tohar_gambar_lokalis', ['no_rawat' => $no_rawat])->row();
+        // Cek apakah gambar sudah ada di database untuk kombinasi no_rawat dan kd_dokter
+        $existing_image = $this->Lokalis_model->getLokalisImage($no_rawat, $kd_dokter);
 
         if ($existing_image) {
-            echo json_encode(['status' => 'error', 'message' => 'Gambar untuk no rawat ini sudah ada. Anda hanya bisa mengunggah gambar satu kali.']);
+            echo json_encode(['status' => 'error', 'message' => 'Gambar untuk no rawat ini dan dokter ini sudah ada. Anda hanya bisa mengunggah gambar satu kali.']);
             return;
         }
 
@@ -114,10 +116,7 @@ class MedisOrthopediController extends CI_Controller {
 
             if (file_put_contents($path, $imageData)) {
                 // Simpan nama atau path gambar ke database
-                $this->db->insert('tohar_gambar_lokalis', [
-                    'no_rawat' => $no_rawat,
-                    'image' => $imageName
-                ]);
+                $this->Lokalis_model->saveLokalisImage($no_rawat, $kd_dokter, $imageName);
                 echo json_encode(['status' => 'success', 'message' => 'Gambar berhasil disimpan.', 'image' => $imageName]);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan gambar.']);
@@ -129,16 +128,17 @@ class MedisOrthopediController extends CI_Controller {
 
     public function deleteLokalisImage() {
         $no_rawat = $this->input->post('no_rawat');
+        $kd_dokter = $this->input->post('kd_dokter');
 
-        // Ambil data gambar dari database
-        $imageData = $this->db->get_where('tohar_gambar_lokalis', ['no_rawat' => $no_rawat])->row();
+        // Ambil data gambar dari database berdasarkan no_rawat dan kd_dokter
+        $imageData = $this->Lokalis_model->getLokalisImage($no_rawat, $kd_dokter);
 
         if ($imageData) {
             $imageName = $imageData->image;
             $filePath = $this->config->item('upload_full_path') . $imageName;
 
             // Hapus dari database terlebih dahulu
-            $this->db->delete('tohar_gambar_lokalis', ['no_rawat' => $no_rawat]);
+            $this->Lokalis_model->deleteLokalisImage($no_rawat, $kd_dokter);
 
             // Cek apakah file ada dan bisa dihapus
             if (file_exists($filePath)) {

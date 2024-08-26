@@ -9,6 +9,7 @@ function submitAsesmenMedisAnak(event) {
     var canvas = document.getElementById('lokalisCanvas');
     var imageData = canvas.toDataURL('image/png');
     var no_rawat = document.getElementById('no_rawat').value;
+    var kd_dokter = document.getElementById('kd_dokter').value;
 
     // Disable tombol simpan untuk mencegah duplikasi
     $('#submitBtn').prop('disabled', true);
@@ -23,11 +24,12 @@ function submitAsesmenMedisAnak(event) {
             if (res.status === 'success') {
                 if (imageData && imageData !== "data:,") {
                     return $.ajax({
-                        url: base_url + "MedisAnakController/saveLokalisImage",
+                        url: base_url + "LokalisController/saveLokalisImage",
                         method: "POST",
                         data: {
                             imageData: imageData,
-                            no_rawat: no_rawat
+                            no_rawat: no_rawat,
+                            kd_dokter: kd_dokter
                         }
                     });
                 } else {
@@ -69,10 +71,6 @@ function submitAsesmenMedisAnak(event) {
         resetForm(); // Kembali ke mode tambah data setelah update atau tambah
     });
 }
-
-
-
-
 
 // Objek global untuk menyimpan data asesmen
 var asesmenMedisAnakData = {};
@@ -142,21 +140,23 @@ function loadAsesmenMedisAnakData() {
                         tableBody += '<tr>';
                         if (asesmen.ket_fisik) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Keterangan Fisik:</b><br/> <span style="color: black;">' + asesmen.ket_fisik + '</span></td></tr>';
                         tableBody += '</tr>';
-                        tableBody += '<tr>';
-                        if (asesmen.image) {
-                            // Hapus baris gambar lama (jika ada) sebelum menambahkan yang baru
-                            $('#asesmenMedisAnakTable tbody tr.gambar-lokalis-row').remove();
-                            var imageUrl = uploadUrl + asesmen.image; // Pastikan uploadUrl sudah diinisialisasi
-                            console.log('Image URL:', imageUrl); // Debugging URL
-                            // Tambahkan baris gambar baru
-                            tableBody += '<tr class="gambar-lokalis-row">'; // Tambahkan class untuk identifikasi
-                            tableBody += '<td colspan="12" style="text-align:center;"><b style="color: maroon;">Gambar Lokalis:</b><br/>';
-                            tableBody += '<img src="' + imageUrl + '" alt="Gambar Lokalis" style="max-width: 100%; height: auto; margin: 10px auto;" />';
-                            tableBody += '<br/><button type="button" class="btn btn-danger btn-sm" onclick="deleteLokalisImage(\'' + asesmen.no_rawat + '\')">Hapus Gambar</button>';
-                            tableBody += '</td>';
-                            tableBody += '</tr>';
-                        }
 
+                        tableBody += '<tr>';
+                        if (asesmen.image) 
+                        {
+						    var imageUrl = uploadUrl + asesmen.image;
+						    console.log('Image URL:', imageUrl); // Debugging the final image URL
+
+						    tableBody += '<tr class="gambar-lokalis-row">';
+						    tableBody += '<td colspan="12" style="text-align:center;"><b style="color: maroon;">Gambar Lokalis:</b><br/>';
+						    tableBody += '<img src="' + imageUrl + '" alt="Gambar Lokalis" style="max-width: 100%; height: auto; margin: 10px auto;" />';
+						    tableBody += '<br/><button type="button" class="btn btn-danger btn-sm" onclick="deleteLokalisImage(\'' + asesmen.no_rawat + '\', \'' + asesmen.kd_dokter + '\')">Hapus Gambar</button>';
+						    tableBody += '</td>';
+						    tableBody += '</tr>';
+						}
+
+
+                        tableBody += '<tr>';
                         if (asesmen.ket_lokalis) tableBody += '<tr><td colspan="12"><b style="color: maroon;">Keterangan Lokalis:</b><br/> <span style="color: black;">' + asesmen.ket_lokalis + '</span></td></tr>';
                         tableBody += '</tr>';
 
@@ -168,7 +168,7 @@ function loadAsesmenMedisAnakData() {
                         // Tambah tombol Edit dan Hapus
                         tableBody += '<tr><td colspan="12">';
                         tableBody += '<button type="button" class="btn btn-warning btn-sm" onclick="editAsesmenMedisAnak(\'' + asesmen.no_rawat + '\')">Edit</button> ';
-                        tableBody += '<button type="button" class="btn btn-danger btn-sm" onclick="deleteAsesmenMedisAnak(\'' + asesmen.no_rawat + '\')">Hapus</button>';
+                        tableBody += '<button type="button" class="btn btn-danger btn-sm" onclick="deleteAsesmenMedisAnak(\'' + asesmen.no_rawat + '\', \'' + asesmen.kd_dokter + '\')">Hapus</button>';
                         tableBody += '</td></tr>';
 
                         tableBody += '</table>';
@@ -191,7 +191,6 @@ function loadAsesmenMedisAnakData() {
         }
     });
 }
-
 
 
 let canvas = document.getElementById('lokalisCanvas');
@@ -240,7 +239,6 @@ function resetLokalis() {
     ctx.drawImage(document.getElementById('lokalisImage'), 0, 0, canvas.width, canvas.height); // Mengembalikan gambar awal
 }
 
-
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
 canvas.addEventListener('mousemove', draw);
@@ -259,24 +257,26 @@ function saveLokalis() {
     let canvas = document.getElementById('lokalisCanvas');
     let imageData = canvas.toDataURL('image/png');
     let no_rawat = document.getElementById('no_rawat').value;
+    let kd_dokter = document.getElementById('kd_dokter').value;
 
     $.ajax({
-        url: base_url + "MedisAnakController/saveLokalisImage",
+        url: base_url + "LokalisController/saveLokalisImage",
         method: "POST",
         data: {
             imageData: imageData,
-            no_rawat: no_rawat
+            no_rawat: no_rawat,
+            kd_dokter: kd_dokter
         },
         success: function(response) {
             try {
                 let res = JSON.parse(response);
 
                 if (res.status === 'success') {
-                alert(res.message);
-                loadAsesmenMedisAnakData(); // Panggil fungsi untuk memuat ulang data setelah gambar berhasil disimpan
-            } else {
-                alert('Gagal menyimpan gambar: ' + res.message);
-            }
+                    alert(res.message);
+                    loadAsesmenMedisAnakData(); // Panggil fungsi untuk memuat ulang data setelah gambar berhasil disimpan
+                } else {
+                    alert('Gagal menyimpan gambar: ' + res.message);
+                }
 
             } catch (error) {
                 console.error('Error parsing JSON:', error);
@@ -291,7 +291,7 @@ function saveLokalis() {
     });
 }
 
-function deleteAsesmenMedisAnak(no_rawat) {
+function deleteAsesmenMedisAnank(no_rawat, kd_dokter) {
     if (confirm('Apakah Anda yakin ingin menghapus asesmen ini beserta gambar yang terkait?')) {
         $.ajax({
             url: base_url + "MedisAnakController/delete_asesmenMedisAnak",
@@ -301,7 +301,32 @@ function deleteAsesmenMedisAnak(no_rawat) {
                 var res = JSON.parse(response);
                 if (res.status === 'success') {
                     // Panggil fungsi untuk menghapus gambar juga
-                    deleteLokalisImage(no_rawat, function() {
+                    deleteLokalisImage(no_rawat, kd_dokter, function() {
+                        loadAsesmenMedisOrthopediData(); // Muat ulang data asesmen setelah penghapusan
+                    });
+                } else {
+                    alert('Gagal menghapus asesmen: ' + res.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error deleting asesmen:', textStatus, errorThrown);
+                alert('Terjadi kesalahan: ' + textStatus);
+            }
+        });
+    }
+}
+
+function deleteAsesmenMedisAnak(no_rawat, kd_dokter) {
+    if (confirm('Apakah Anda yakin ingin menghapus asesmen ini beserta gambar yang terkait?')) {
+        $.ajax({
+            url: base_url + "MedisAnakController/delete_asesmenMedisAnak",
+            method: "POST",
+            data: { no_rawat: no_rawat },
+            success: function(response) {
+                var res = JSON.parse(response);
+                if (res.status === 'success') {
+                    // Panggil fungsi untuk menghapus gambar juga
+                    deleteLokalisImage(no_rawat, kd_dokter, function() {
                         loadAsesmenMedisAnakData(); // Muat ulang data asesmen setelah penghapusan
                     });
                 } else {
@@ -316,11 +341,15 @@ function deleteAsesmenMedisAnak(no_rawat) {
     }
 }
 
-function deleteLokalisImage(no_rawat, callback) {
+function deleteLokalisImage(no_rawat, kd_dokter, callback) {
+    console.log('Menghapus gambar dengan no_rawat:', no_rawat, 'kd_dokter:', kd_dokter);
     $.ajax({
-        url: base_url + "MedisAnakController/deleteLokalisImage",
+        url: base_url + "LokalisController/deleteLokalisImage",
         method: "POST",
-        data: { no_rawat: no_rawat },
+        data: { 
+            no_rawat: no_rawat,
+            kd_dokter: kd_dokter 
+        },
         success: function(response) {
             let res = JSON.parse(response);
             if (res.status === 'success' || res.message === 'File gambar tidak ditemukan.') {
@@ -346,7 +375,6 @@ function deleteLokalisImage(no_rawat, callback) {
         }
     });
 }
-
 
 // Fungsi untuk mengedit asesmen
 function editAsesmenMedisAnak(no_rawat) {
